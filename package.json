@@ -1,8 +1,8 @@
 {
-  "name": "lower-case-dashed-name-of-project",
-  "repository": "REPOSITORY-NAME-AS-IT-APPEARS-IN-GITHUB-URL",
+  "name": "procedural-terrain-generator-from-flat-to-life",
+  "repository": "https://github.com/mwcooper/COS426FinalProject",
   "version": "0.1.0",
-  "title": "PROJECT TITLE HERE",
+  "title": "Life Flight",
   "description": "SHORT DESCRIPTION OF PROJECT HERE. ONE TO TWO SENTENCES MAX",
   "keywords": [
     "Princeton",
@@ -10,10 +10,11 @@
     "three.js",
     "COS 426",
     "ivy league",
-    "keyword1",
-    "keyword2",
-    "...",
-    "this last entry CANNOT have a comma after it ->"
+    "terrain",
+    "generation",
+    "flying",
+    "life",
+    "Texture"
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development --output-public-path \"\"",
