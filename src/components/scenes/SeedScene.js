@@ -1,10 +1,10 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color } from 'three';
+import { Scene, Color, EquirectangularReflectionMapping } from 'three';
 import { Flower, Land } from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
-    constructor() {
+    constructor(camera) {
         // Call parent Scene() constructor
         super();
 
@@ -16,13 +16,13 @@ class SeedScene extends Scene {
         };
 
         // Set background to a nice color
+        // MWC TODO - Equirectangular background of stars
         this.background = new Color(0x050018);
 
         // Add meshes to scene
         const land = new Land();
-        const flower = new Flower(this);
         const lights = new BasicLights();
-        this.add(land, flower, lights);
+        this.add(land, lights);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
