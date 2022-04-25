@@ -3,7 +3,7 @@
   "repository": "https://github.com/mwcooper/COS426FinalProject",
   "version": "0.1.0",
   "title": "Life Flight",
-  "description": "SHORT DESCRIPTION OF PROJECT HERE. ONE TO TWO SENTENCES MAX",
+  "description": "Flying terrain generator that increases in complexity as the camera gets closer to the terrain",
   "keywords": [
     "Princeton",
     "graphics",
