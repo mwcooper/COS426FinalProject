@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, EquirectangularReflectionMapping } from 'three';
-import { Flower, Land } from 'objects';
+import { Flower, Land, Chunk} from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
@@ -20,9 +20,10 @@ class SeedScene extends Scene {
         this.background = new Color(0x050018);
 
         // Add meshes to scene
-        const land = new Land();
         const lights = new BasicLights();
-        this.add(land, lights);
+        const chunk = new Chunk(this);
+        const land = new Land();
+        this.add(lights, chunk, land);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);

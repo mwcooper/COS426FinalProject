@@ -1,4 +1,4 @@
-import { Group } from 'three';
+import { Group, PlaneGeometry, Mesh, MeshLambertMaterial, VertexColors } from 'three';
 import  SimplexNoise  from 'simplex-noise';
 
 
@@ -9,7 +9,11 @@ class Chunk extends Group {
 
         // Init state
         this.state = {
-            gui: parent.state.gui
+            gui: parent.state.gui,
+            width: 256,
+            height: 256,
+            data: []
+
         };
 
         // // Load object
@@ -21,7 +25,7 @@ class Chunk extends Group {
         // });
 
         // Add self to parent's update list
-        parent.addToUpdateList(this);
+        //parent.addToUpdateList(this);
 
         // // Populate GUI
         // this.state.gui.add(this.state, 'new seed');
@@ -61,14 +65,14 @@ class Chunk extends Group {
         }
 
         // turn into mesh
-        const geo = new THREE.PlaneGeometry(data.width,data.height,
-            data.width,data.height+1)
+        const geo = new PlaneGeometry(this.state.width,this.state.height,
+            this.state.width,this.state.height+1)
         //assign vert data from the canvas
-        for(let j=0; j<data.height; j++) {
-            for (let i = 0; i < data.width; i++) {
-            const n =  (j*(data.height)  +i)
-            const nn = (j*(data.height+1)+i)
-            const col = data.data[n*4] // the red channel
+        for(let j=0; j<this.state.height; j++) {
+            for (let i = 0; i < this.state.width; i++) {
+            const n =  (j*(this.state.height)  +i)
+            const nn = (j*(this.state.height+1)+i)
+            const col = this.state.data[n*4] // the red channel
             const v1 = geo.vertices[nn]
             v1.z = map(col,0,255,-10,10) //map from 0:255 to -10:10
             if(v1.z > 2.5) v1.z *= 1.3 //exaggerate the peaks
@@ -110,9 +114,9 @@ class Chunk extends Group {
 
         //required for flat shading
         geo.computeFlatVertexNormals()
-        const mesh = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({
+        const mesh = new Mesh(geo, new MeshLambertMaterial({
             // wireframe:true,
-            vertexColors: THREE.VertexColors,
+            vertexColors: VertexColors,
             //required for flat shading
             flatShading:true,
         }))
@@ -124,4 +128,4 @@ class Chunk extends Group {
 
 }
 
-export default Flower;
+export default Chunk;
