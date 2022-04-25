@@ -10,8 +10,8 @@ class Chunk extends Group {
         // Init state
         this.state = {
             gui: parent.state.gui,
-            width: 256,
-            height: 256,
+            width: 8,
+            height: 8,
             data: []
 
         };
@@ -120,8 +120,8 @@ class Chunk extends Group {
             //required for flat shading
             flatShading:true,
         }))
-        mesh.position.y = -0
-        mesh.position.z = -20
+        mesh.position.y = 0
+        mesh.position.z = 0
 
         this.add(mesh);
     }
