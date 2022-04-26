@@ -47,7 +47,7 @@ class Chunk extends Group {
             // Re-map from -1.0:+1.0 to 0.0:1.0
             return map(simplex.noise2D(nx,ny),-1,1,0,1)
         }
-        //stack some noisefields together, commented out bc we don't need atm
+        // stack some noisefields together, commented out bc we don't need atm
         function octave(nx,ny,octaves) {
             let val = 0;
             let freq = 1;

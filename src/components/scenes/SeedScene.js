@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, AxesHelper } from 'three';
-import { Flower, Land, Chunk, ChunkManager } from 'objects';
+import { Flower, Land, Chunk, ChunkManager, TerrainGenerator } from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
