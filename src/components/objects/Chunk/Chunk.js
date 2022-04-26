@@ -9,11 +9,15 @@ import {
 import SimplexNoise from 'simplex-noise';
 
 class Chunk extends Group {
-    constructor(parent, nx, ny) {
+    constructor(parent, width, height, xOffset) {
         // Call parent Group() constructor
         super();
 
         this.name = 'Chunk';
+
+        this.width = width;
+        this.height = height;
+        this.xOffset = xOffset;
 
         // Init state
         // this.state = {
@@ -35,10 +39,10 @@ class Chunk extends Group {
         // // Populate GUI
         // this.state.gui.add(this.state, 'new seed');
 
-        this.terrainMesh = this.generateTerrain(nx, ny);
+        this.terrainMesh = this.generateTerrain();
     }
 
-    generateTerrain(nx, ny) {
+    generateTerrain() {
         // Create Height Field using Simplex noise (https://blog.mozvr.com/low-poly-style-terrain-generation/)
         let simplex = new SimplexNoise(5);
 
@@ -71,15 +75,13 @@ class Chunk extends Group {
             return z / max;
         }
 
-        
-        // Uncustomizable parameters
-        const width = 30;
-        const height = 150;
+        const width = this.width;
+        const height = this.height;
 
         // TODO add GUI elements to make these customizable
-        const resolution = 3;
-        const scale = 20;
-        const noiseStrength = 20;
+        const resolution = 1;
+        const scale = 50; // 20-100 for range?
+        const noiseStrength = 40;
 
         // Create mesh
         const geo = new PlaneGeometry(
@@ -91,23 +93,20 @@ class Chunk extends Group {
 
         // Create noisy terrain
         // Adapted from https://codepen.io/DonKarlssonSan/pen/deVYoZ?editors=0010
-        for(let i =0; i < geo.vertices.length; i++){
+        for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
+            vertex.x += this.xOffset;
             const x = vertex.x / scale;
             const y = vertex.y / scale;
             const noise = fbm(x, y);
             vertex.z = noise * noiseStrength;
 
-            //map(val, 0, 1, 0, 1); //map from 0:255 to -10:10
-
-                // Modifications
-                //if (vertex.z > 2.5) vertex.z *= 1.3; //exaggerate the peaks
-                // vertex.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
-                // vertex.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
-                // }
+            // Modifications
+            if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
+            // BUG jitter causes a break in stitching
+            vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
+            vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
         }
-                
-            
 
         // Set colors:
         //for every face
@@ -128,10 +127,10 @@ class Chunk extends Group {
 
             //assign colors based on the highest point of the face
             const max = Math.max(a.z, Math.max(b.z, c.z));
-            if (max <= 0) return f.color.set(0x44ccff);
-            if (max <= 10) return f.color.set(0x228800);
-            if (max <= 20) return f.color.set(0xeecc44);
-            if (max <= 30) return f.color.set(0xcccccc);
+            if (max <= 0.25 * noiseStrength) return f.color.set(0x44ccff);
+            if (max <= 0.5 * noiseStrength) return f.color.set(0x228811);
+            if (max <= 0.7 * noiseStrength) return f.color.set(0x335577);
+            if (max <= 0.9 * noiseStrength) return f.color.set(0xcccccc);
 
             //otherwise, return white
             f.color.set('white');

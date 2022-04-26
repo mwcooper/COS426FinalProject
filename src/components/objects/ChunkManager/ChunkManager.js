@@ -1,5 +1,12 @@
-import { Group, PlaneGeometry, Mesh, MeshLambertMaterial, VertexColors, Data3DTexture } from 'three';
-import { Chunk} from 'objects';
+import {
+    Group,
+    PlaneGeometry,
+    Mesh,
+    MeshLambertMaterial,
+    VertexColors,
+    Data3DTexture,
+} from 'three';
+import { Chunk } from 'objects';
 
 class ChunkManager extends Group {
     constructor(parent, camera) {
@@ -10,29 +17,20 @@ class ChunkManager extends Group {
         this.list = [];
         this.camera = camera;
 
-
         // Add self to parent's update list
         parent.addToUpdateList(this);
 
-        let initChunk = new Chunk(this, 0, 0);
-        let chunkTerrain = initChunk.terrainMesh;
-        this.add(chunkTerrain);
-        console.log("added")
-        this.list.push(initChunk);
-
-
-        let secondChunk = new Chunk(this, 0.2, 0.3)
-        secondChunk.moveChunk(300); // TODO: this 300 is from canvas property in Chunk
-        this.add(secondChunk.terrainMesh)
-        console.log("added 2")
-        this.list.push(secondChunk);
-
-        let third = new Chunk(this, 0.2, 0.3)
-        third.moveChunk(600); // TODO: this 300 is from canvas property in Chunk
-        this.add(third.terrainMesh)
-        console.log("added 3")
-        this.list.push(third);
-        
+        // Create initial chunks
+        const numChunks = 10;
+        this.width = 30;
+        this.height = 150;
+        this.xOffset = this.width;
+        for (let i = 0; i < numChunks; i++) {
+            const chunk = new Chunk(this, this.width, this.height, i * this.xOffset);
+            let chunkTerrain = chunk.terrainMesh;
+            this.add(chunkTerrain);
+            this.list.push(chunk);
+        }
     }
 
     update(timeStamp) {
@@ -43,21 +41,22 @@ class ChunkManager extends Group {
             this.list[i].moveChunk(speed);
 
             // replace chunks behind camera
-            if (this.list[i].terrainMesh.position.x < this.camera.position.x - 150) {
+            if (
+                this.list[i].terrainMesh.position.x <
+                this.camera.position.x - 150
+            ) {
                 this.remove(this.list.shift());
 
                 // add new chunk in back
-                let newChunk = new Chunk(this, 0.2, 0.3)
-                newChunk.moveChunk(this.list[this.list.length-1].terrainMesh.position.x + 300)
-                console.log(this.list.length)
-                // console.log(this.list[this.list.length-1].terrainMesh);
-                this.add(newChunk.terrainMesh)
-                this.list.push(newChunk)
+                let newChunk = new Chunk(this, this.width, this.height, 0);
+                newChunk.moveChunk(
+                    this.list[this.list.length - 1].terrainMesh.position.x + this.xOffset
+                );
+
+                this.add(newChunk.terrainMesh);
+                this.list.push(newChunk);
             }
         }
-
-        
-
     }
 }
 
