@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, EquirectangularReflectionMapping } from 'three';
-import { Flower, Land, Chunk} from 'objects';
+import { Scene, Color, AxesHelper } from 'three';
+import { Flower, Land, Chunk } from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
@@ -17,16 +17,20 @@ class SeedScene extends Scene {
 
         // Set background to a nice color
         // MWC TODO - Equirectangular background of stars
-        this.background = new Color(0x050018);
+        //this.background = new Color(0x050018);
+        this.background = new Color(0xeeeeee);
 
         // Add meshes to scene
         const lights = new BasicLights();
         const chunk = new Chunk(this);
-        const land = new Land();
-        this.add(lights, chunk, land);
+        this.add(lights, chunk);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+
+        // Debugging X axis is red. The Y axis is green. The Z axis is blue.
+        const axesHelper = new AxesHelper(5);
+        this.add(axesHelper);
     }
 
     addToUpdateList(object) {

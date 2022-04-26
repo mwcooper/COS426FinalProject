@@ -30,7 +30,6 @@ class Chunk extends Group {
         this.generateTerrain();
 
 
-
     }
 
 
@@ -63,7 +62,7 @@ class Chunk extends Group {
 
         //generate grayscale image of noise
         function generateTexture() {
-            const canvas = document.getElementById('debug-canvas')
+            const canvas = document.createElement('canvas')
             const c = canvas.getContext('2d')
             c.fillStyle = 'black'
             c.fillRect(0,0,canvas.width, canvas.height)
@@ -82,7 +81,7 @@ class Chunk extends Group {
         let data = generateTexture();
 
         // turn into mesh
-        const geo = new THREE.PlaneGeometry(data.width,data.height,
+        const geo = new PlaneGeometry(data.width,data.height,
             data.width,data.height+1)
         //assign vert data from the canvas
         for(let j=0; j<data.height; j++) {
@@ -132,13 +131,13 @@ class Chunk extends Group {
         //required for flat shading
         geo.computeFlatVertexNormals()
         const mesh = new Mesh(geo, new MeshLambertMaterial({
-            // wireframe:true,
+            //wireframe:true,
             vertexColors: VertexColors,
             //required for flat shading
             flatShading:true,
         }))
-        mesh.position.y = 0
-        mesh.position.z = 0
+        mesh.position.y = -20
+        mesh.position.z = -20
 
         this.add(mesh);
     }
