@@ -22,9 +22,8 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         const lights = new BasicLights();
-        //const chunkManager = new ChunkManager(this);
-        const terrain = new TerrainGenerator(this);
-        this.add(lights, terrain);
+        const chunkManager = new ChunkManager(this);
+        this.add(lights, chunkManager);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);

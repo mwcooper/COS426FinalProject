@@ -25,7 +25,7 @@ class TerrainGenerator extends Group {
         
         // Setup the plane. Can adjust side parameter to make high res or low poly
         const side = 120;
-        geometry = new PlaneGeometry(40,40,side,side);
+        let geometry = new PlaneGeometry(40,40,side,side);
         let material = new MeshLambertMaterial({
             //wireframe:true,
             //vertexColors: VertexColors,
