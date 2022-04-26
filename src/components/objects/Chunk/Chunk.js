@@ -79,7 +79,7 @@ class Chunk extends Group {
         const height = this.height;
 
         // TODO add GUI elements to make these customizable
-        const resolution = 1;
+        const resolution = 1; // Dont make this too big (crashes due to too much memory overflow)
         const scale = 50; // 20-100 for range?
         const noiseStrength = 40;
 
