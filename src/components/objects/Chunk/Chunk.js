@@ -47,7 +47,7 @@ class Chunk extends Group {
             // Re-map from -1.0:+1.0 to 0.0:1.0
             return map(simplex.noise2D(nx,ny),-1,1,0,1)
         }
-        // stack some noisefields together, commented out bc we don't need atm
+        // stack some noisefields together
         function octave(nx,ny,octaves) {
             let val = 0;
             let freq = 1;
@@ -62,13 +62,17 @@ class Chunk extends Group {
             return val/max;
         }
 
+        
+
         //generate grayscale image of noise
         function generateTexture() {
             const canvas = document.createElement('canvas')
             const c = canvas.getContext('2d')
+            canvas.width = 100; // along x axis, 
+            canvas.height = 150;
             c.fillStyle = 'black'
             c.fillRect(0,0,canvas.width, canvas.height)
-            // console.log(canvas.width, canvas.height) 
+            console.log(canvas.width, canvas.height) 
             // output: 300 by 150
 
             for(let i=0; i<canvas.width; i++) {
@@ -86,19 +90,27 @@ class Chunk extends Group {
 
         // turn into mesh
         const geo = new PlaneGeometry(data.width,data.height,
-            data.width,data.height/2)
+            data.width*2,data.height*2)
         //assign vert data from the canvas
-        for(let j=0; j<data.height; j++) {
-            for (let i = 0; i < data.width; i++) {
-                const n =  (j*(data.height)  +i)
-                const nn = (j*(data.height+1)+i)
-                const col = data.data[n*4] // the red channel
-                const v1 = geo.vertices[nn]
-                v1.z = map(col,0,255,-10,40) //map from 0:255 to -10:10
-                if(v1.z > 2.5) v1.z *= 1.3 //exaggerate the peaks
-                // v1.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
-                // v1.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
-            }
+        // for(let j=0; j<data.height; j++) {
+        //     for (let i = 0; i < data.width; i++) {
+        //         const n =  (j*(data.height)  +i)
+        //         const nn = (j*(data.height)+i)
+        //         const col = data.data[n*4] // the red channel
+        //         console.log(geo.vertices.length, (data.height-1)*(data.height)+data.width-1)
+        //         const v1 = geo.vertices[nn]
+        //         // if (!(v1 === undefined)) {
+        //             v1.z = map(col,0,255,-10,40) //map from 0:255 to -10:10
+        //             if(v1.z > 2.5) v1.z *= 1.3 //exaggerate the peaks
+        //             // v1.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
+        //             // v1.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
+        //         // }
+        //     }
+        // }
+
+
+        for (let v = 0; v < geo.vertices.length; v++) {
+            geo.vertices[v].z += 0.001*v
         }
         
         // Set colors:
