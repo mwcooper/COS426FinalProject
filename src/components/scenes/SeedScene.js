@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, AxesHelper } from 'three';
-import { Flower, Land, Chunk, ChunkManager } from 'objects';
+import { Flower, Land, Chunk, ChunkManager, TerrainGenerator } from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
@@ -22,8 +22,9 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         const lights = new BasicLights();
-        const chunkManager = new ChunkManager(this);
-        this.add(lights, chunkManager);
+        //const chunkManager = new ChunkManager(this);
+        const terrain = new TerrainGenerator(this);
+        this.add(lights, terrain);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
