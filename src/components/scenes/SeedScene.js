@@ -22,7 +22,7 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         const lights = new BasicLights();
-        const chunkManager = new ChunkManager(this);
+        const chunkManager = new ChunkManager(this, camera);
         this.add(lights, chunkManager);
 
         // Populate GUI

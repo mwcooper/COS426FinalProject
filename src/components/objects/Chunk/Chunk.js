@@ -29,7 +29,6 @@ class Chunk extends Group {
         // // Populate GUI
         // this.state.gui.add(this.state, 'new seed');
 
-        // TODO: (1) take nx and ny in chunk constructor
         this.terrainMesh = this.generateTerrain(nx, ny);
 
     }
