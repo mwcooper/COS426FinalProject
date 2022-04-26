@@ -1,6 +1,12 @@
-import { Group, PlaneGeometry, Mesh, MeshLambertMaterial, VertexColors, Data3DTexture } from 'three';
-import  SimplexNoise  from 'simplex-noise';
-
+import {
+    Group,
+    PlaneGeometry,
+    Mesh,
+    MeshLambertMaterial,
+    VertexColors,
+    Data3DTexture,
+} from 'three';
+import SimplexNoise from 'simplex-noise';
 
 class Chunk extends Group {
     constructor(parent, nx, ny) {
@@ -30,137 +36,130 @@ class Chunk extends Group {
         // this.state.gui.add(this.state, 'new seed');
 
         this.terrainMesh = this.generateTerrain(nx, ny);
-
     }
 
-
     generateTerrain(nx, ny) {
-
         // Create Height Field using Simplex noise (https://blog.mozvr.com/low-poly-style-terrain-generation/)
         let simplex = new SimplexNoise(5);
+
         function map(val, smin, smax, emin, emax) {
-            const t =  (val-smin)/(smax-smin)
-            return (emax-emin)*t + emin
+            const t = (val - smin) / (smax - smin);
+            return (emax - emin) * t + emin;
         }
         // TODO: (2) rework this noise handling so that the chunks will match up
         function noise(nx, ny) {
             // Re-map from -1.0:+1.0 to 0.0:1.0
-            return map(simplex.noise2D(nx,ny),-1,1,0,1)
+            return map(simplex.noise2D(nx, ny), -1, 1, 0, 1);
         }
+
         // stack some noisefields together
-        function octave(nx,ny,octaves) {
-            let val = 0;
+        function fbm(x, y) {
+            const octaves = 4;
+            const lacunarity = 2.0; // How quickly width shrinks
+            const gain = 0.5; // How slowly height shrinks
+
             let freq = 1;
-            let max = 0;
             let amp = 1;
-            for(let i=0; i<octaves; i++) {
-                val += noise(nx*freq,ny*freq)*amp;
+            let z = 0;
+            let max = 0;
+            for (let i = 0; i < octaves; i++) {
+                z += amp * noise(x * freq, y * freq);
                 max += amp;
-                amp /= 2;
-                freq  *= 2;
+                freq *= lacunarity;
+                amp *= gain;
             }
-            return val/max;
+            return z / max;
         }
 
         
+        // Uncustomizable parameters
+        const width = 30;
+        const height = 150;
 
-        //generate grayscale image of noise
-        function generateTexture() {
-            const canvas = document.createElement('canvas')
-            const c = canvas.getContext('2d')
-            canvas.width = 100; // along x axis, 
-            canvas.height = 150;
-            c.fillStyle = 'black'
-            c.fillRect(0,0,canvas.width, canvas.height)
-            console.log(canvas.width, canvas.height) 
-            // output: 300 by 150
+        // TODO add GUI elements to make these customizable
+        const resolution = 3;
+        const scale = 20;
+        const noiseStrength = 20;
 
-            for(let i=0; i<canvas.width; i++) {
-                for(let j=0; j<canvas.height; j++) {
-                    let v =  octave(i/canvas.width,j/canvas.height,16)
-                    const per = (100*v).toFixed(2)+'%'
-                    c.fillStyle = `rgb(${per},${per},${per})`
-                    c.fillRect(i,j,1,1)
-                }
-            }
-            return c.getImageData(0,0,canvas.width,canvas.height)
+        // Create mesh
+        const geo = new PlaneGeometry(
+            width,
+            height,
+            width * resolution,
+            height * resolution
+        );
+
+        // Create noisy terrain
+        // Adapted from https://codepen.io/DonKarlssonSan/pen/deVYoZ?editors=0010
+        for(let i =0; i < geo.vertices.length; i++){
+            const vertex = geo.vertices[i];
+            const x = vertex.x / scale;
+            const y = vertex.y / scale;
+            const noise = fbm(x, y);
+            vertex.z = noise * noiseStrength;
+
+            //map(val, 0, 1, 0, 1); //map from 0:255 to -10:10
+
+                // Modifications
+                //if (vertex.z > 2.5) vertex.z *= 1.3; //exaggerate the peaks
+                // vertex.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
+                // vertex.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
+                // }
         }
+                
+            
 
-        let data = generateTexture();
-
-        // turn into mesh
-        const geo = new PlaneGeometry(data.width,data.height,
-            data.width*2,data.height*2)
-        //assign vert data from the canvas
-        // for(let j=0; j<data.height; j++) {
-        //     for (let i = 0; i < data.width; i++) {
-        //         const n =  (j*(data.height)  +i)
-        //         const nn = (j*(data.height)+i)
-        //         const col = data.data[n*4] // the red channel
-        //         console.log(geo.vertices.length, (data.height-1)*(data.height)+data.width-1)
-        //         const v1 = geo.vertices[nn]
-        //         // if (!(v1 === undefined)) {
-        //             v1.z = map(col,0,255,-10,40) //map from 0:255 to -10:10
-        //             if(v1.z > 2.5) v1.z *= 1.3 //exaggerate the peaks
-        //             // v1.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
-        //             // v1.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
-        //         // }
-        //     }
-        // }
-
-
-        for (let v = 0; v < geo.vertices.length; v++) {
-            geo.vertices[v].z += 0.001*v
-        }
-        
         // Set colors:
         //for every face
-        geo.faces.forEach(f=>{
+        geo.faces.forEach((f) => {
             //get three verts for the face
-            const a = geo.vertices[f.a]
-            const b = geo.vertices[f.b]
-            const c = geo.vertices[f.c]
+            const a = geo.vertices[f.a];
+            const b = geo.vertices[f.b];
+            const c = geo.vertices[f.c];
 
             //if average is below water, set to 0
             //alt: color transparent to show the underwater landscape
-            const avgz = (a.z+b.z+c.z)/3
-            if(avgz < 0) {
-                a.z = 0
-                b.z = 0
-                c.z = 0
+            const avgz = (a.z + b.z + c.z) / 3;
+            if (avgz < 0) {
+                a.z = 0;
+                b.z = 0;
+                c.z = 0;
             }
 
             //assign colors based on the highest point of the face
-            const max = Math.max(a.z,Math.max(b.z,c.z))
-            if(max <=0)   return f.color.set(0x44ccff)
-            if(max <=10) return f.color.set(0x228800)
-            if(max <=20)   return f.color.set(0xeecc44)
-            if(max <=30)   return f.color.set(0xcccccc)
+            const max = Math.max(a.z, Math.max(b.z, c.z));
+            if (max <= 0) return f.color.set(0x44ccff);
+            if (max <= 10) return f.color.set(0x228800);
+            if (max <= 20) return f.color.set(0xeecc44);
+            if (max <= 30) return f.color.set(0xcccccc);
 
             //otherwise, return white
-            f.color.set('white')
-        })
+            f.color.set('white');
+        });
 
-        geo.colorsNeedUpdate = true
-        geo.verticesNeedUpdate = true
+        geo.colorsNeedUpdate = true;
+        geo.verticesNeedUpdate = true;
 
         //required for flat shading
-        geo.computeFlatVertexNormals()
-        const mesh = new Mesh(geo, new MeshLambertMaterial({
-            //wireframe:true,
-            vertexColors: VertexColors,
-            //required for flat shading
-            flatShading:true,
-        }))
-        mesh.position.y = 0
-        mesh.position.z = -20
+        geo.computeFlatVertexNormals();
+        const mesh = new Mesh(
+            geo,
+            new MeshLambertMaterial({
+                //wireframe:true,
+                vertexColors: VertexColors,
+                //required for flat shading
+                flatShading: true,
+            })
+        );
+        mesh.position.y = 0;
+        mesh.position.z = -20;
 
         return mesh;
     }
 
-    /* sets chunk position.x to x and position.y to y, 
-    * calculates and angles along
-    */
+    /* sets chunk position.x to x and position.y to y,
+     * calculates and angles along
+     */
     setChunkPosition(x, y, rads) {
         this.position.x = x;
         this.position.y = y;
@@ -168,10 +167,8 @@ class Chunk extends Group {
 
     // moves a chunk in the x direction
     moveChunk(x) {
-        this.terrainMesh.translateX(x)
+        this.terrainMesh.translateX(x);
     }
-    
-
 }
 
 export default Chunk;

@@ -17,7 +17,7 @@ const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
 camera.position.set(-150,0,50);
-camera.lookAt(10,0,0);
+camera.lookAt(10,0,-25);
 camera.rotateZ(1.5 * Math.PI);
 
 
