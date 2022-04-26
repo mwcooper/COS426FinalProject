@@ -7,10 +7,12 @@ class Chunk extends Group {
         // Call parent Group() constructor
         super();
 
+        this.name = 'Chunk';
+
         // Init state
         this.state = {
             gui: parent.state.gui,
-
+            chunks: [],
         };
 
         // // Load object
@@ -28,7 +30,6 @@ class Chunk extends Group {
         // this.state.gui.add(this.state, 'new seed');
 
         this.generateTerrain();
-
 
     }
 
@@ -141,6 +142,21 @@ class Chunk extends Group {
 
         this.add(mesh);
     }
+
+    /* sets chunk position.x to x and position.y to y, 
+    * calculates and angles along
+    */
+    setChunkPosition(x, y, rads) {
+        this.position.x = x;
+        this.position.y = y;
+    }
+
+    // moves a chunk in the x direction
+    moveChunk(x) {
+        this.position.x += x;
+    }
+    
+
 
 }
 
