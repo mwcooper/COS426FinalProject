@@ -40,4 +40,4 @@ class TerrainGenerator extends Group {
     }
 }
 
-export default ChunkManager;
+export default TerrainGenerator;
