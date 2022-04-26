@@ -17,8 +17,8 @@ class SeedScene extends Scene {
 
         // Set background to a nice color
         // MWC TODO - Equirectangular background of stars
-        //this.background = new Color(0x050018);
-        this.background = new Color(0xeeeeee);
+        this.background = new Color(0x050018);
+        //this.background = new Color(0xeeeeee);
 
         // Add meshes to scene
         const lights = new BasicLights();

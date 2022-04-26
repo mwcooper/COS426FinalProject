@@ -36,7 +36,7 @@ class Chunk extends Group {
     generateTerrain() {
 
         // Create Height Field using Simplex noise (https://blog.mozvr.com/low-poly-style-terrain-generation/)
-        let simplex = new SimplexNoise(4);
+        let simplex = new SimplexNoise(5);
         function map(val, smin, smax, emin, emax) {
             const t =  (val-smin)/(smax-smin)
             return (emax-emin)*t + emin
@@ -82,7 +82,7 @@ class Chunk extends Group {
 
         // turn into mesh
         const geo = new PlaneGeometry(data.width,data.height,
-            data.width,data.height+1)
+            data.width,data.height/2)
         //assign vert data from the canvas
         for(let j=0; j<data.height; j++) {
             for (let i = 0; i < data.width; i++) {
@@ -90,10 +90,10 @@ class Chunk extends Group {
                 const nn = (j*(data.height+1)+i)
                 const col = data.data[n*4] // the red channel
                 const v1 = geo.vertices[nn]
-                v1.z = map(col,0,255,-10,10) //map from 0:255 to -10:10
+                v1.z = map(col,0,255,-10,40) //map from 0:255 to -10:10
                 if(v1.z > 2.5) v1.z *= 1.3 //exaggerate the peaks
-                // v1.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
-                // v1.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
+                v1.x += map(Math.random(),0,1,-0.5,0.5) //jitter x
+                v1.y += map(Math.random(),0,1,-0.5,0.5) //jitter y
             }
         }
         
@@ -117,9 +117,9 @@ class Chunk extends Group {
             //assign colors based on the highest point of the face
             const max = Math.max(a.z,Math.max(b.z,c.z))
             if(max <=0)   return f.color.set(0x44ccff)
-            if(max <=1.5) return f.color.set(0x228800)
-            if(max <=3.5)   return f.color.set(0xeecc44)
-            if(max <=5)   return f.color.set(0xcccccc)
+            if(max <=10) return f.color.set(0x228800)
+            if(max <=20)   return f.color.set(0xeecc44)
+            if(max <=30)   return f.color.set(0xcccccc)
 
             //otherwise, return white
             f.color.set('white')
@@ -136,7 +136,7 @@ class Chunk extends Group {
             //required for flat shading
             flatShading:true,
         }))
-        mesh.position.y = -20
+        mesh.position.y = 0
         mesh.position.z = -20
 
         this.add(mesh);
