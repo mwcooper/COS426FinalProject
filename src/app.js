@@ -16,8 +16,10 @@ const scene = new SeedScene(camera);
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
-camera.position.set(-0,0,0);
-//camera.lookAt(new Vector3(100, 0, -10));
+camera.position.set(-200,0,0);
+camera.lookAt(10,0,0);
+camera.rotateZ(1.5 * Math.PI);
+
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -28,16 +30,18 @@ document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
 // Set up controls
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-controls.enablePan = false;
-controls.minDistance = 4;
-controls.maxDistance = 16;
-controls.update();
+// const controls = new OrbitControls(camera, canvas);
+// controls.enableDamping = true;
+// controls.enablePan = false;
+// controls.minDistance = 4;
+// controls.maxDistance = 16;
+// controls.update();
+// camera.rotateX(90*Math.PI/180);
+// controls.update();
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-    controls.update();
+    //controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
