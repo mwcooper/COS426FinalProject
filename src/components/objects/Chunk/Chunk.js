@@ -40,7 +40,7 @@ class Chunk extends Group {
         const height = this.state.height;
 
         // Customizable
-        const resolution = this.state.resolution;
+        //const resolution = this.state.resolution;
         const scale = this.state.noiseScale;
         const noiseStrength = this.state.noiseStrength;
 
@@ -180,6 +180,8 @@ class Chunk extends Group {
 
         // Translate the chunk (move it closer and update the curve)
         this.terrainMesh.translateX(-speed);
+
+        // Update terrain based on slider parameters (this seems difficult. Dreamworld used presets. Im guessing it was because it was too hard to livetime update)
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
 
