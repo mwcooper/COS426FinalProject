@@ -40,7 +40,7 @@ class Chunk extends Group {
         const height = this.state.height;
 
         // Customizable
-        //const resolution = this.state.resolution;
+        const resolution = this.state.resolution;
         const scale = this.state.noiseScale;
         const noiseStrength = this.state.noiseStrength;
 
