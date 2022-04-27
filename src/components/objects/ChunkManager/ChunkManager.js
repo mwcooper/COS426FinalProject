@@ -64,7 +64,7 @@ class ChunkManager extends Group {
         const { updateList } = this.state;
 
         // TODO create and destroy chunks as we move
-
+        
 
         // Call update for each object in the updateList
         for (const obj of updateList) {
