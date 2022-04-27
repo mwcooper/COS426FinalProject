@@ -83,6 +83,8 @@ class Chunk extends Group {
             height * resolution
         );
 
+        let maxX = -100000;
+        let minX = 100000;
         // Create noisy terrain
         // Adapted from https://codepen.io/DonKarlssonSan/pen/deVYoZ?editors=0010
         for (let i = 0; i < geo.vertices.length; i++) {
@@ -96,12 +98,12 @@ class Chunk extends Group {
             // Modifications
             if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
 
-            // BUG jitter causes a break in stitching (solution is to not jitter at edges of chunk)
-            if (Math.floor(vertex.x) % width != 0) {
+            if ((vertex.x+width/2)%width != 0) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
                 vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
             }
         }
+        console.log(minX, maxX, this.state.xOffset, width)
 
         // Set colors:
         //for every face
@@ -121,7 +123,7 @@ class Chunk extends Group {
             }
 
             //assign colors based on the highest point of the face
-            const max = Math.max(a.z, Math.max(b.z, c.z));
+            const max = Math.max(a.z, b.z, c.z);
             if (max <= 0.25 * noiseStrength) return f.color.set(0x44ccff);
             if (max <= 0.5 * noiseStrength) return f.color.set(0x228811);
             if (max <= 0.7 * noiseStrength) return f.color.set(0x335577);
