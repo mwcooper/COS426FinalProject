@@ -11,22 +11,20 @@ class SeedScene extends Scene {
         // Init state
         this.state = {
             gui: new Dat.GUI(), // Create GUI for scene
-            rotationSpeed: 0,
             updateList: [],
+            camera: camera
         };
 
         // Set background to a nice color
         // MWC TODO - Equirectangular background of stars
         this.background = new Color(0x050018);
-        //this.background = new Color(0xeeeeee);
 
         // Add meshes to scene
         const lights = new BasicLights();
-        const chunkManager = new ChunkManager(this, camera);
+        const chunkManager = new ChunkManager(this);
         this.add(lights, chunkManager);
 
-        // Populate GUI
-        this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+        
 
         // Debugging X axis is red. The Y axis is green. The Z axis is blue.
         const axesHelper = new AxesHelper(5);
@@ -38,8 +36,7 @@ class SeedScene extends Scene {
     }
 
     update(timeStamp) {
-        const { rotationSpeed, updateList } = this.state;
-        this.rotation.y = (rotationSpeed * timeStamp) / 10000;
+        const { updateList } = this.state;
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

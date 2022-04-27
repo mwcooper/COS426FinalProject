@@ -9,53 +9,66 @@ import {
 import { Chunk } from 'objects';
 
 class ChunkManager extends Group {
-    constructor(parent, camera) {
+    constructor(parent) {
         // Call parent Group() constructor
         super();
 
-        this.name = 'ChunkManager';
-        this.list = [];
-        this.camera = camera;
+        // Init state
+        this.state = {
+            gui: parent.state.gui,
+            camera: parent.camera,
+            speed: 0.2,
+
+            updateList: [],
+            chunks: [],
+
+            numChunks: 20,
+            width: 30,
+            height: 150,
+            xOffset: 0,
+            seed: 3,
+            resolution: 1,
+            noiseScale: 50,
+            noiseStrength: 40,
+        };
 
         // Add self to parent's update list
         parent.addToUpdateList(this);
 
+        // Populate GUI
+        // BUG sliders dont actually do anything bc doesnt affect chunks already created
+        this.state.gui.add(this.state, 'speed', 0.01, 3.0).step(0.1);
+        this.state.gui.add(this.state, 'seed', 0, 10).step(1);
+        this.state.gui.add(this.state, 'resolution', 1, 4).step(1); // Dont make this too big (crashes due to too much memory overflow)
+        this.state.gui.add(this.state, 'noiseScale', 20, 100).step(1);
+        this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
+
         // Create initial chunks
-        const numChunks = 10;
-        this.width = 30;
-        this.height = 150;
-        this.xOffset = this.width;
-        for (let i = 0; i < numChunks; i++) {
-            const chunk = new Chunk(this, this.width, this.height, i * this.xOffset);
-            let chunkTerrain = chunk.terrainMesh;
-            this.add(chunkTerrain);
-            this.list.push(chunk);
+        this.createInitialChunks();
+    }
+
+    createInitialChunks() {
+        for (let i = 0; i < this.state.numChunks; i++) {
+            const chunk = new Chunk(this);
+            this.add(chunk.terrainMesh);
+            this.state.chunks.push(chunk);
+            this.state.xOffset += this.state.width;
         }
     }
 
+    addToUpdateList(object) {
+        this.state.updateList.push(object);
+    }
+
     update(timeStamp) {
-        const speed = -0.1;
+        const { updateList } = this.state;
 
-        for (var i = 0; i < this.list.length; i++) {
-            // move terrain
-            this.list[i].moveChunk(speed);
+        // TODO create and destroy chunks as we move
 
-            // replace chunks behind camera
-            if (
-                this.list[i].terrainMesh.position.x <
-                this.camera.position.x - 150
-            ) {
-                this.remove(this.list.shift());
 
-                // add new chunk in back
-                let newChunk = new Chunk(this, this.width, this.height, 0);
-                newChunk.moveChunk(
-                    this.list[this.list.length - 1].terrainMesh.position.x + this.xOffset
-                );
-
-                this.add(newChunk.terrainMesh);
-                this.list.push(newChunk);
-            }
+        // Call update for each object in the updateList
+        for (const obj of updateList) {
+            obj.update(timeStamp);
         }
     }
 }

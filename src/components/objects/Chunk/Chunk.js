@@ -9,54 +9,54 @@ import {
 import SimplexNoise from 'simplex-noise';
 
 class Chunk extends Group {
-    constructor(parent, width, height, xOffset) {
+    constructor(parent) {
         // Call parent Group() constructor
         super();
 
-        this.name = 'Chunk';
-
-        this.width = width;
-        this.height = height;
-        this.xOffset = xOffset;
-
         // Init state
-        // this.state = {
-        //     gui: parent.state.gui,
-        //     chunks: [],
-        // };
+        this.state = {
+            gui: parent.state.gui,
+            width: parent.state.width,
+            height: parent.state.height,
+            xOffset: parent.state.xOffset,
+            speed: parent.state.speed,
+            seed: parent.state.seed,
+            resolution: parent.state.resolution,
+            noiseScale: parent.state.noiseScale,
+            noiseStrength: parent.state.noiseStrength,
 
-        // // Load object
-        // const loader = new GLTFLoader();
-
-        // this.name = 'flower';
-        // loader.load(MODEL, (gltf) => {
-        //     this.add(gltf.scene);
-        // });
+            updateList: [],
+            chunks: [],
+        };
 
         // Add self to parent's update list
-        //parent.addToUpdateList(this);
-
-        // // Populate GUI
-        // this.state.gui.add(this.state, 'new seed');
+        parent.addToUpdateList(this);
 
         this.terrainMesh = this.generateTerrain();
     }
 
     generateTerrain() {
-        // Create Height Field using Simplex noise (https://blog.mozvr.com/low-poly-style-terrain-generation/)
-        let simplex = new SimplexNoise(5);
+        const width = this.state.width;
+        const height = this.state.height;
+
+        // Customizable
+        const resolution = this.state.resolution;
+        const scale = this.state.noiseScale;
+        const noiseStrength = this.state.noiseStrength;
+
+        let simplex = new SimplexNoise(this.state.seed);
 
         function map(val, smin, smax, emin, emax) {
             const t = (val - smin) / (smax - smin);
             return (emax - emin) * t + emin;
         }
-        // TODO: (2) rework this noise handling so that the chunks will match up
+
         function noise(nx, ny) {
             // Re-map from -1.0:+1.0 to 0.0:1.0
             return map(simplex.noise2D(nx, ny), -1, 1, 0, 1);
         }
 
-        // stack some noisefields together
+        // Fractal Brownian Motion
         function fbm(x, y) {
             const octaves = 4;
             const lacunarity = 2.0; // How quickly width shrinks
@@ -75,14 +75,6 @@ class Chunk extends Group {
             return z / max;
         }
 
-        const width = this.width;
-        const height = this.height;
-
-        // TODO add GUI elements to make these customizable
-        const resolution = 1; // Dont make this too big (crashes due to too much memory overflow)
-        const scale = 50; // 20-100 for range?
-        const noiseStrength = 40;
-
         // Create mesh
         const geo = new PlaneGeometry(
             width,
@@ -95,7 +87,7 @@ class Chunk extends Group {
         // Adapted from https://codepen.io/DonKarlssonSan/pen/deVYoZ?editors=0010
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
-            vertex.x += this.xOffset;
+            vertex.x += this.state.xOffset;
             const x = vertex.x / scale;
             const y = vertex.y / scale;
             const noise = fbm(x, y);
@@ -103,9 +95,12 @@ class Chunk extends Group {
 
             // Modifications
             if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
-            // BUG jitter causes a break in stitching
-            vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
-            vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
+
+            // BUG jitter causes a break in stitching (solution is to not jitter at edges of chunk)
+            if (Math.floor(vertex.x) % width != 0) {
+                vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
+                vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
+            }
         }
 
         // Set colors:
@@ -150,23 +145,25 @@ class Chunk extends Group {
                 flatShading: true,
             })
         );
-        mesh.position.y = 0;
         mesh.position.z = -20;
 
         return mesh;
     }
 
-    /* sets chunk position.x to x and position.y to y,
-     * calculates and angles along
-     */
-    setChunkPosition(x, y, rads) {
-        this.position.x = x;
-        this.position.y = y;
+    addToUpdateList(object) {
+        this.state.updateList.push(object);
     }
 
-    // moves a chunk in the x direction
-    moveChunk(x) {
-        this.terrainMesh.translateX(x);
+    update(timeStamp) {
+        const { speed, updateList } = this.state;
+
+        // Translate the chunk
+        this.terrainMesh.translateX(-speed);
+
+        // Call update for each object in the updateList
+        for (const obj of updateList) {
+            obj.update(timeStamp);
+        }
     }
 }
 
