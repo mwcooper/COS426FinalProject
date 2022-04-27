@@ -22,10 +22,11 @@ class ChunkManager extends Group {
             updateList: [],
             chunks: [],
 
-            numChunks: 20,
+            numChunks: 5,
             width: 30,
             height: 150,
             xOffset: 0,
+            noiseOffset: 0,
             seed: 3,
             resolution: 1,
             noiseScale: 50,
@@ -37,6 +38,7 @@ class ChunkManager extends Group {
 
         // Populate GUI
         // BUG sliders dont actually do anything bc doesnt affect chunks already created
+        // TODO make sliders work in realtime. Solution: use chunk update function?
         this.state.gui.add(this.state, 'speed', 0.01, 3.0).step(0.1);
         this.state.gui.add(this.state, 'seed', 0, 10).step(1);
         this.state.gui.add(this.state, 'resolution', 1, 4).step(1); // Dont make this too big (crashes due to too much memory overflow)
@@ -49,11 +51,16 @@ class ChunkManager extends Group {
 
     createInitialChunks() {
         for (let i = 0; i < this.state.numChunks; i++) {
-            const chunk = new Chunk(this);
-            this.add(chunk.terrainMesh);
-            this.state.chunks.push(chunk);
-            this.state.xOffset += this.state.width;
+            this.addChunk();
         }
+    }
+
+    addChunk(){
+        const chunk = new Chunk(this);
+        this.add(chunk.terrainMesh);
+        this.state.chunks.push(chunk);
+        this.state.xOffset += this.state.width;
+        this.state.noiseOffset += this.state.width;
     }
 
     addToUpdateList(object) {
@@ -61,29 +68,26 @@ class ChunkManager extends Group {
     }
 
     update(timeStamp) {
+        this.state.xOffset -= this.state.speed;
+
+        // Remove chunk if behind camera
+        if (this.state.chunks[0].terrainMesh.position.x < 0) {
+            const chunk = this.state.chunks.shift();
+            // There are some better ways to remove stuff that are more memory efficient but we will stick with this until it is an issue
+            this.remove(chunk);
+        }
+
+        // Add chunk
+        if (this.state.chunks.length < this.state.numChunks) {
+            this.addChunk();
+        }
+
         const { updateList } = this.state;
 
         // Call update for each object in the updateList
         for (const obj of updateList) {
             obj.update(timeStamp);
         }
-
-
-        // TODO create and destroy chunks as we move
-        // if (this.state.chunks.length < this.state.chunks.numChunks) {
-        //     // add chunk
-        //     const chunk = new Chunk(this);
-        //     this.add(chunk.terrainMesh);
-        //     this.state.chunks.push(chunk);
-        //     this.state.xOffset += this.state.width;
-        // }
-
-        // console.log(this.state.chunks[0].terrainMesh.position.x)
-        // if (this.state.chunks[0].terrainMesh.xOffset < 0) {
-        //     this.remove(this.state.chunks.shift())
-        //     console.log("r")
-        //     console.log(this.state.chunks.length)
-        // }
     }
 }
 

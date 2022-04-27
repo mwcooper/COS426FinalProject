@@ -19,6 +19,7 @@ class Chunk extends Group {
             width: parent.state.width,
             height: parent.state.height,
             xOffset: parent.state.xOffset,
+            noiseOffset: parent.state.noiseOffset,
             speed: parent.state.speed,
             seed: parent.state.seed,
             resolution: parent.state.resolution,
@@ -88,22 +89,20 @@ class Chunk extends Group {
         // Adapted from https://codepen.io/DonKarlssonSan/pen/deVYoZ?editors=0010
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
-            vertex.x += this.state.xOffset;
-            const x = vertex.x / scale;
+            const x = (vertex.x + this.state.noiseOffset) / scale;
             const y = vertex.y / scale;
-            const noise = fbm(x, y);
+            const noise = fbm(x , y);
             vertex.z = noise * noiseStrength;
 
             // Modifications
             // if (vertex.z < 0.5 * noiseStrength) vertex.z *= 0.9; //exaggerate the peaks
             if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
 
-            if ((vertex.x+width/2)%width != 0) {
+            if ((vertex.x + width / 2) % width != 0) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
                 vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
             }
         }
-
 
         // Set colors:
         //for every face
@@ -124,22 +123,29 @@ class Chunk extends Group {
 
             //assign colors based on the highest point of the face
             const max = Math.max(a.z, b.z, c.z);
-            if (max <= 0.25 * noiseStrength) { 
+            if (max <= 0.25 * noiseStrength) {
                 // make water flat
-                a.z = 0.25*noiseStrength; b.z = 0.25*noiseStrength; c.z = 0.25*noiseStrength;
-                return f.color.set(0x44ccff); }
+                a.z = 0.25 * noiseStrength;
+                b.z = 0.25 * noiseStrength;
+                c.z = 0.25 * noiseStrength;
+                return f.color.set(0x44ccff);
+            }
             if (max <= 0.3 * noiseStrength) {
                 // yellow (beach) color
-                return f.color.set(0xdec362);}
+                return f.color.set(0xdec362);
+            }
             if (max <= 0.5 * noiseStrength) {
                 // green (grass)
-                return f.color.set(0x228811);}
+                return f.color.set(0x228811);
+            }
             if (max <= 0.7 * noiseStrength) {
                 // cliff grey
-                return f.color.set(0x335577);}
+                return f.color.set(0x335577);
+            }
             if (max <= 0.9 * noiseStrength) {
                 // snow white
-                return f.color.set(0xcccccc);}
+                return f.color.set(0xcccccc);
+            }
 
             //otherwise, return white
             f.color.set('white');
@@ -160,6 +166,7 @@ class Chunk extends Group {
             })
         );
         mesh.position.z = -20;
+        mesh.position.x = this.state.xOffset;
 
         return mesh;
     }
@@ -171,8 +178,16 @@ class Chunk extends Group {
     update(timeStamp) {
         const { speed, updateList } = this.state;
 
-        // Translate the chunk
+        // Translate the chunk (move it closer and update the curve)
         this.terrainMesh.translateX(-speed);
+
+        // Increase the height of the terrain as a function of this.terrainMesh.x
+
+        // Add color as a function of this.terrainMesh.x
+
+        // Add plants as a function of this.terrainMesh.x
+
+        // Add moving life as a function of this.terrainMesh.x
 
         // Call update for each object in the updateList
         // also translate each object in updatelist
