@@ -64,7 +64,13 @@ class ChunkManager extends Group {
         const { updateList } = this.state;
 
         // TODO create and destroy chunks as we move
-        
+        if (this.state.chunks.length < this.state.chunks.numChunks) {
+            // add chunk
+            const chunk = new Chunk(this);
+            this.add(chunk.terrainMesh);
+            this.state.chunks.push(chunk);
+            this.state.xOffset += this.state.width;
+        }
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

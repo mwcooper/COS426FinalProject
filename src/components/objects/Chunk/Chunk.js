@@ -26,7 +26,6 @@ class Chunk extends Group {
             noiseStrength: parent.state.noiseStrength,
 
             updateList: [],
-            chunks: [],
         };
 
         // Add self to parent's update list
@@ -96,6 +95,7 @@ class Chunk extends Group {
             vertex.z = noise * noiseStrength;
 
             // Modifications
+            // if (vertex.z < 0.5 * noiseStrength) vertex.z *= 0.9; //exaggerate the peaks
             if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
 
             if ((vertex.x+width/2)%width != 0) {
@@ -103,6 +103,7 @@ class Chunk extends Group {
                 vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
             }
         }
+
 
         // Set colors:
         //for every face
@@ -127,9 +128,18 @@ class Chunk extends Group {
                 // make water flat
                 a.z = 0.25*noiseStrength; b.z = 0.25*noiseStrength; c.z = 0.25*noiseStrength;
                 return f.color.set(0x44ccff); }
-            if (max <= 0.5 * noiseStrength) return f.color.set(0x228811);
-            if (max <= 0.7 * noiseStrength) return f.color.set(0x335577);
-            if (max <= 0.9 * noiseStrength) return f.color.set(0xcccccc);
+            if (max <= 0.3 * noiseStrength) {
+                // yellow (beach) color
+                return f.color.set(0xdec362);}
+            if (max <= 0.5 * noiseStrength) {
+                // green (grass)
+                return f.color.set(0x228811);}
+            if (max <= 0.7 * noiseStrength) {
+                // cliff grey
+                return f.color.set(0x335577);}
+            if (max <= 0.9 * noiseStrength) {
+                // snow white
+                return f.color.set(0xcccccc);}
 
             //otherwise, return white
             f.color.set('white');
@@ -165,7 +175,9 @@ class Chunk extends Group {
         this.terrainMesh.translateX(-speed);
 
         // Call update for each object in the updateList
+        // also translate each object in updatelist
         for (const obj of updateList) {
+            obj.translateX(-speed);
             obj.update(timeStamp);
         }
     }
