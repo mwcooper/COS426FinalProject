@@ -42,8 +42,6 @@ class Chunk extends Group {
         this.colorTerrain();
     }
 
-
-
     generateTerrain() {
         const width = this.state.width;
         const height = this.state.height;
@@ -99,14 +97,14 @@ class Chunk extends Group {
             const vertex = geo.vertices[i];
             const x = (vertex.x + this.state.noiseOffset) / scale;
             const y = vertex.y / scale;
-            const noise = fbm(x , y);
+            const noise = fbm(x, y);
             // vertex.z = noise * noiseStrength;
             this.heightMap.push(noise * noiseStrength);
 
             // Modifications
             // if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
-            if (this.heightMap[i] > 0.95 * noiseStrength) this.heightMap[i] *= 1.3; //exaggerate the peaks
-
+            if (this.heightMap[i] > 0.95 * noiseStrength)
+                this.heightMap[i] *= 1.3; //exaggerate the peaks
 
             if ((vertex.x + width / 2) % width != 0) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
@@ -136,7 +134,7 @@ class Chunk extends Group {
 
     colorTerrain() {
         let geo = this.terrainMesh.geometry;
-        const noiseStrength = this.state.noiseStrength; 
+        const noiseStrength = this.state.noiseStrength;
 
         // console.log(this.terrainMesh)
 
@@ -196,8 +194,8 @@ class Chunk extends Group {
     // loop thru each vertex and lerp its new .z based on the vertex's .x between gcl[0] and gcl[1]
     growTerrain() {
         const geo = this.terrainMesh.geometry;
-        
-        // returns alpha value from 0 to 1 
+
+        // returns alpha value from 0 to 1
 
         // these two functions from https://codepen.io/trys/pen/XWrNRze:
         const clamp = (a, min = 0, max = 1) => Math.min(max, Math.max(min, a));
@@ -205,14 +203,17 @@ class Chunk extends Group {
 
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
-            let alpha = invlerp(this.state.growColorLife[0], this.state.growColorLife[1], vertex.x+this.terrainMesh.position.x)
-            vertex.z = this.heightMap[i]*alpha;
+            let alpha = invlerp(
+                this.state.growColorLife[0],
+                this.state.growColorLife[1],
+                vertex.x + this.terrainMesh.position.x
+            );
+            vertex.z = this.heightMap[i] * alpha;
         }
 
         // console.log(this.state.growColorLife[0], this.state.growColorLife[1], geo.vertices[10].x, invlerp(this.state.growColorLife[0], this.state.growColorLife[1], geo.vertices[10].x))
 
         geo.verticesNeedUpdate = true;
-
     }
 
     addToUpdateList(object) {
@@ -228,12 +229,14 @@ class Chunk extends Group {
         // Update terrain based on slider parameters (this seems difficult. Dreamworld used presets. Im guessing it was because it was too hard to livetime update)
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
-        if (this.terrainMesh.position.x < this.state.growColorLife[0] && 
-            this.terrainMesh.position.x+this.state.width/2 > this.state.growColorLife[1]) {
-                this.growTerrain();
-                this.colorTerrain();
+        if (
+            this.terrainMesh.position.x < this.state.growColorLife[0] &&
+            this.terrainMesh.position.x + this.state.width / 2 >
+                this.state.growColorLife[1]
+        ) {
+            this.growTerrain();
+            this.colorTerrain();
         }
-
 
         // Add color as a function of this.terrainMesh.x
 
