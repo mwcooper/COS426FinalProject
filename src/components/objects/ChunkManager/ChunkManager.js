@@ -16,7 +16,7 @@ class ChunkManager extends Group {
         // Init state
         this.state = {
             gui: parent.state.gui,
-            speed: 0.5,
+            speed: 0.2,
 
             updateList: [],
             chunks: [],
@@ -24,7 +24,7 @@ class ChunkManager extends Group {
             numChunks: 1,
             width: 30,
             height: 150,
-            xOffset: -30,
+            thetaOffset: 0,
             noiseOffset: 0,
             seed: 3,
             resolution: 1,
@@ -32,12 +32,13 @@ class ChunkManager extends Group {
             noiseStrength: 50,
             growthBoundaries: [],
             ringRadius: 1000,
+            chordTheta: 0,
             meshMaterial: undefined,
         };
 
         this.state.growthBoundaries = [
-            20 * this.state.width,
-            5 * this.state.width,
+            30 * this.state.width,
+            15 * this.state.width,
             4 * this.state.width,
             3 * this.state.width,
             2 * this.state.width,
@@ -52,6 +53,11 @@ class ChunkManager extends Group {
             flatShading: true,
         });
 
+        const EPS = 2*Math.PI/1000
+        this.state.chordTheta = 2*Math.asin(this.state.width/2/this.state.ringRadius)-EPS;
+        //this.state.numChunks = Math.floor(0.5 * Math.PI / this.state.chordTheta);
+        this.state.numChunks = 40;
+
         // Add self to parent's update list
         parent.addToUpdateList(this);
 
@@ -64,23 +70,15 @@ class ChunkManager extends Group {
         this.state.gui.add(this.state, 'noiseScale', 20, 100).step(1);
         this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
 
-        // Create initial chunks
-        this.state.numChunks = 0.5 * Math.PI * this.state.ringRadius/this.state.width - 1
-        //this.createInitialChunks();
-    }
 
-    createInitialChunks() {
-        for (let i = 0; i < this.state.numChunks; i++) {
-            this.addChunk();
-        }
     }
 
     addChunk() {
         const chunk = new Chunk(this);
         this.add(chunk.terrainMesh);
         this.state.chunks.push(chunk);
-        this.state.xOffset += this.state.width;
         this.state.noiseOffset += this.state.width;
+        this.state.thetaOffset += this.state.chordTheta;
     }
 
     addToUpdateList(object) {
@@ -88,7 +86,7 @@ class ChunkManager extends Group {
     }
 
     update(timeStamp) {
-        this.state.xOffset -= this.state.speed;
+        this.state.thetaOffset -= 0.001 * this.state.speed*2*Math.PI;
 
         // Add new chunk if necessary
         if (this.state.chunks.length < this.state.numChunks) {

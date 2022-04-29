@@ -23,7 +23,7 @@ class Chunk extends Group {
             gui: parent.state.gui,
             width: parent.state.width,
             height: parent.state.height,
-            xOffset: parent.state.xOffset,
+            thetaOffset: parent.state.thetaOffset,
             noiseOffset: parent.state.noiseOffset,
             speed: parent.state.speed,
             seed: parent.state.seed,
@@ -119,27 +119,24 @@ class Chunk extends Group {
 
         geo.computeFlatVertexNormals();
         const mesh = new Mesh(geo, this.state.meshMaterial);
-        const EPS =2;
-        mesh.position.x = this.state.xOffset - EPS;
+        const radius = this.state.ringRadius;
+        const thetaOffset = this.state.thetaOffset;
+        mesh.position.x = radius * Math.sin(thetaOffset);
+        mesh.position.z = radius - radius * Math.cos(thetaOffset);
         mesh.lookAt(0, 0, this.state.ringRadius);
 
         return mesh;
     }
 
-    translate(speed) {
-        // Calculate the z position of the mesh based on how far it is from the camera
-        const currX = this.terrainMesh.position.x;
-        const currZ = this.terrainMesh.position.z;
+    moveOnRing() {
+        // Calculate the z position of the mesh based on its theta position in the ring
+        this.state.thetaOffset -= 0.001 * this.state.speed*2*Math.PI;
+        const thetaOffset = this.state.thetaOffset;
+        const mesh = this.terrainMesh;
         const radius = this.state.ringRadius;
-        let z = 0;
-        if (currX < radius) {
-            z = -Math.sqrt(-(currX ** 2) + radius ** 2) + radius - currZ;
-            this.terrainMesh.translateZ(z);
-        }
-        // Move the mesh closer to the camera
-        this.terrainMesh.translateX(-speed);
-        // Rotate the mesh so it looks like it is a smooth ring
-        this.terrainMesh.lookAt(0, 0, radius);
+        mesh.position.x = radius * Math.sin(thetaOffset);
+        mesh.position.z = radius - radius * Math.cos(thetaOffset);
+        mesh.lookAt(0, 0, this.state.ringRadius);
     }
 
     colorTerrain() {
@@ -229,7 +226,7 @@ class Chunk extends Group {
         const { speed, updateList } = this.state;
 
         // Translate the chunk (move it closer and update the curve)
-        this.translate(speed);
+        this.moveOnRing();
 
         // Update terrain based on slider parameters (this seems difficult. Dreamworld used presets. Im guessing it was because it was too hard to livetime update)
 
@@ -244,9 +241,7 @@ class Chunk extends Group {
         // Add moving life as a function of this.terrainMesh.x
 
         // Call update for each object in the updateList
-        // also translate each object in updatelist
         for (const obj of updateList) {
-            obj.translateX(-speed);
             obj.update(timeStamp);
         }
     }
