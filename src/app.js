@@ -11,12 +11,13 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 
 // Initialize core ThreeJS components
-const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
+const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
 const scene = new SeedScene(camera);
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
 camera.position.set(0,0,80);
+camera.lookAt(1000,0,1000);
 camera.lookAt(75,0,75);
 camera.rotateZ(1.5 * Math.PI);
 

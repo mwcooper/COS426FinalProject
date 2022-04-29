@@ -16,23 +16,23 @@ class ChunkManager extends Group {
         // Init state
         this.state = {
             gui: parent.state.gui,
-            camera: parent.camera,
-            speed: 0.2,
+            speed: 0.5,
 
             updateList: [],
             chunks: [],
 
-            numChunks: 10,
+            numChunks: 1,
             width: 30,
             height: 150,
             xOffset: -30,
             noiseOffset: 0,
             seed: 3,
             resolution: 1,
-            noiseScale: 50,
-            noiseStrength: 40,
+            noiseScale: 60,
+            noiseStrength: 50,
             growthBoundaries: [],
             ringRadius: 1000,
+            meshMaterial: undefined,
         };
 
         this.state.growthBoundaries = [
@@ -43,6 +43,14 @@ class ChunkManager extends Group {
             2 * this.state.width,
             1 * this.state.width,
         ];
+
+        // To save memory
+        this.state.meshMaterial = new MeshLambertMaterial({
+            //wireframe:true,
+            vertexColors: VertexColors,
+            //required for flat shading
+            flatShading: true,
+        });
 
         // Add self to parent's update list
         parent.addToUpdateList(this);
@@ -57,8 +65,8 @@ class ChunkManager extends Group {
         this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
 
         // Create initial chunks
-        this.state.numChunks = this.state.ringRadius/this.state.width - 1
-        this.createInitialChunks();
+        this.state.numChunks = 0.5 * Math.PI * this.state.ringRadius/this.state.width - 1
+        //this.createInitialChunks();
     }
 
     createInitialChunks() {
@@ -82,24 +90,27 @@ class ChunkManager extends Group {
     update(timeStamp) {
         this.state.xOffset -= this.state.speed;
 
-        // Remove chunk if behind camera
-        if (this.state.chunks[0].terrainMesh.position.x < 0) {
-            const chunk = this.state.chunks.shift();
-            // There are some better ways to remove stuff that are more memory efficient but we will stick with this until it is an issue
-            this.remove(chunk);
-        }
-
-        // Add chunk
-        if (this.state.chunks.length < this.state.ringRadius/this.state.width - 3) {
+        // Add new chunk if necessary
+        if (this.state.chunks.length < this.state.numChunks) {
             this.addChunk();
         }
 
-        const { updateList } = this.state;
+        // Remove chunk if behind camera, 
+        if (this.state.chunks[0].terrainMesh.position.x < 0) {
+            const chunk = this.state.chunks.shift();
+            // There are some better ways to remove stuff that are more memory efficient but we will stick with this until it is an issue
+            this.remove(chunk.terrainMesh)
+            chunk.terrainMesh.geometry.dispose()
+            //chunk.terrainMesh.material.dispose()
+            chunk.terrainMesh = undefined
+            this.remove(chunk);
+        } 
 
-        // Call update for each object in the updateList
-        for (const obj of updateList) {
-            obj.update(timeStamp);
+         // Call update for each chunk in the chunks list
+         for (const chunk of this.state.chunks) {
+            chunk.update(timeStamp);
         }
+       
     }
 }
 

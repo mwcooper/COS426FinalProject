@@ -32,7 +32,7 @@ class Chunk extends Group {
             noiseStrength: parent.state.noiseStrength,
             growthBoundaries: parent.state.growthBoundaries,
             ringRadius: parent.state.ringRadius,
-
+            meshMaterial: parent.state.meshMaterial,
             updateList: [],
         };
 
@@ -105,8 +105,8 @@ class Chunk extends Group {
 
             // Modifications
             // if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
-            if (this.heightMap[i] > 0.95 * noiseStrength)
-                this.heightMap[i] *= 1.3; //exaggerate the peaks
+            if (this.heightMap[i] > 0.87 * noiseStrength)
+                this.heightMap[i] *= 1.07; //exaggerate the peaks
 
             if ((vertex.x + width / 2) % width != 0) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
@@ -118,18 +118,10 @@ class Chunk extends Group {
         geo.colorsNeedUpdate = true;
 
         geo.computeFlatVertexNormals();
-        const mesh = new Mesh(
-            geo,
-            new MeshLambertMaterial({
-                //wireframe:true,
-                vertexColors: VertexColors,
-                //required for flat shading
-                flatShading: true,
-            })
-        );
-
-        mesh.position.x = this.state.xOffset;
-        mesh.lookAt(0,0,this.state.ringRadius);
+        const mesh = new Mesh(geo, this.state.meshMaterial);
+        const EPS =2;
+        mesh.position.x = this.state.xOffset - EPS;
+        mesh.lookAt(0, 0, this.state.ringRadius);
 
         return mesh;
     }
@@ -139,15 +131,15 @@ class Chunk extends Group {
         const currX = this.terrainMesh.position.x;
         const currZ = this.terrainMesh.position.z;
         const radius = this.state.ringRadius;
-        let z = 0
+        let z = 0;
         if (currX < radius) {
-            z = -Math.sqrt(-(currX ** 2) + radius**2) + radius - currZ;
+            z = -Math.sqrt(-(currX ** 2) + radius ** 2) + radius - currZ;
             this.terrainMesh.translateZ(z);
         }
         // Move the mesh closer to the camera
         this.terrainMesh.translateX(-speed);
         // Rotate the mesh so it looks like it is a smooth ring
-        this.terrainMesh.lookAt(0,0,radius);
+        this.terrainMesh.lookAt(0, 0, radius);
     }
 
     colorTerrain() {
@@ -206,20 +198,24 @@ class Chunk extends Group {
     // loop thru each vertex and lerp its new .z based on the vertex's .x between gcl[0] and gcl[1]
     growTerrain() {
         const geo = this.terrainMesh.geometry;
-
-        // returns alpha value from 0 to 1
-        // these two functions from https://codepen.io/trys/pen/XWrNRze:
-        const clamp = (a, min = 0, max = 1) => Math.min(max, Math.max(min, a));
-        const invlerp = (x, y, a) => clamp((a - x) / (y - x));
-
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
-            let alpha = invlerp(
-                this.state.growthBoundaries[0],
-                this.state.growthBoundaries[1],
-                vertex.x + this.terrainMesh.position.x
-            );
-            vertex.z = this.heightMap[i] * alpha;
+            const xPos = this.terrainMesh.position.x + vertex.x;
+            const near = this.state.growthBoundaries[1];
+            const far = this.state.growthBoundaries[0];
+            // Close full heights, in between interpolate, far flat
+            if (xPos < near) {
+                // Full height
+                vertex.z = this.heightMap[i];
+            } else if (near < xPos && xPos < far) {
+                // Interpolate
+                const EPS = 2
+                const alpha = (xPos + EPS - far) / (near - far);
+                vertex.z = this.heightMap[i] * alpha;
+            } else {
+                // Flat
+                vertex.z = 0;
+            }
         }
 
         geo.verticesNeedUpdate = true;
@@ -238,16 +234,10 @@ class Chunk extends Group {
         // Update terrain based on slider parameters (this seems difficult. Dreamworld used presets. Im guessing it was because it was too hard to livetime update)
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
-        if (
-            this.terrainMesh.position.x < this.state.growthBoundaries[0] &&
-            this.terrainMesh.position.x + this.state.width / 2 >
-                this.state.growthBoundaries[1]
-        ) {
-            this.growTerrain();
-            this.colorTerrain();
-        }
+        this.growTerrain();
 
         // Add color as a function of this.terrainMesh.x
+        this.colorTerrain();
 
         // Add plants, clouds as a function of this.terrainMesh.x
 
