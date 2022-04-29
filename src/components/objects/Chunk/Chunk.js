@@ -104,9 +104,8 @@ class Chunk extends Group {
             this.heightMap.push(noise * noiseStrength);
 
             // Modifications
-            // if (vertex.z > 0.95 * noiseStrength) vertex.z *= 1.3; //exaggerate the peaks
-            if (this.heightMap[i] > 0.87 * noiseStrength)
-                this.heightMap[i] *= 1.07; //exaggerate the peaks
+            if (this.heightMap[i] > 0.7 * noiseStrength)
+                this.heightMap[i] **= 1.012; //exaggerate the peaks
 
             if ((vertex.x + width / 2) % width != 0) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
@@ -130,7 +129,7 @@ class Chunk extends Group {
 
     moveOnRing() {
         // Calculate the z position of the mesh based on its theta position in the ring
-        this.state.thetaOffset -= 0.001 * this.state.speed*2*Math.PI;
+        this.state.thetaOffset -= 0.001 * this.state.speed * 2 * Math.PI;
         const thetaOffset = this.state.thetaOffset;
         const mesh = this.terrainMesh;
         const radius = this.state.ringRadius;
@@ -144,7 +143,7 @@ class Chunk extends Group {
         const noiseStrength = this.state.noiseStrength;
 
         // Set colors:
-        //for every face
+        // for every face
         geo.faces.forEach((f) => {
             //get three verts for the face
             const a = geo.vertices[f.a];
@@ -206,7 +205,7 @@ class Chunk extends Group {
                 vertex.z = this.heightMap[i];
             } else if (near < xPos && xPos < far) {
                 // Interpolate
-                const EPS = 2
+                const EPS = 2;
                 const alpha = (xPos + EPS - far) / (near - far);
                 vertex.z = this.heightMap[i] * alpha;
             } else {
