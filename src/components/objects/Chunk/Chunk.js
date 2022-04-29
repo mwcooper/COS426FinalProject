@@ -135,6 +135,7 @@ class Chunk extends Group {
     }
 
     translate(speed) {
+        // Calculate the z position of the mesh based on how far it is from the camera
         const currX = this.terrainMesh.position.x;
         const currZ = this.terrainMesh.position.z;
         const radius = this.state.ringRadius;
@@ -143,8 +144,9 @@ class Chunk extends Group {
             z = -Math.sqrt(-(currX ** 2) + radius**2) + radius - currZ;
             this.terrainMesh.translateZ(z);
         }
+        // Move the mesh closer to the camera
         this.terrainMesh.translateX(-speed);
-        const theta = Math.atan((z+currZ)/currX);
+        // Rotate the mesh so it looks like it is a smooth ring
         this.terrainMesh.lookAt(0,0,radius);
     }
 
