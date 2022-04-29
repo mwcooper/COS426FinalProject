@@ -9,6 +9,7 @@ import {
     DstAlphaFactor,
     LoopRepeat,
     ClampToEdgeWrapping,
+    Vector3,
 } from 'three';
 import SimplexNoise from 'simplex-noise';
 
@@ -128,19 +129,23 @@ class Chunk extends Group {
         );
 
         mesh.position.x = this.state.xOffset;
+        mesh.lookAt(0,0,this.state.ringRadius);
 
         return mesh;
     }
 
     translate(speed) {
-        const x = this.terrainMesh.position.x;
+        const currX = this.terrainMesh.position.x;
         const currZ = this.terrainMesh.position.z;
         const radius = this.state.ringRadius;
-        if (x < radius) {
-            const z = -Math.sqrt(-(x ** 2) + radius**2) + radius - currZ;
+        let z = 0
+        if (currX < radius) {
+            z = -Math.sqrt(-(currX ** 2) + radius**2) + radius - currZ;
             this.terrainMesh.translateZ(z);
         }
         this.terrainMesh.translateX(-speed);
+        const theta = Math.atan((z+currZ)/currX);
+        this.terrainMesh.lookAt(0,0,radius);
     }
 
     colorTerrain() {
@@ -168,9 +173,6 @@ class Chunk extends Group {
             const max = Math.max(a.z, b.z, c.z);
             if (max <= 0.25 * noiseStrength) {
                 // // make water flat
-                // a.z = 0.25 * noiseStrength;
-                // b.z = 0.25 * noiseStrength;
-                // c.z = 0.25 * noiseStrength;
                 return f.color.set(0x44ccff);
             }
             if (max <= 0.3 * noiseStrength) {

@@ -22,10 +22,10 @@ class ChunkManager extends Group {
             updateList: [],
             chunks: [],
 
-            numChunks: 25,
+            numChunks: 10,
             width: 30,
             height: 150,
-            xOffset: 0,
+            xOffset: -30,
             noiseOffset: 0,
             seed: 3,
             resolution: 1,
@@ -36,7 +36,7 @@ class ChunkManager extends Group {
         };
 
         this.state.growthBoundaries = [
-            15 * this.state.width,
+            20 * this.state.width,
             5 * this.state.width,
             4 * this.state.width,
             3 * this.state.width,
@@ -57,6 +57,7 @@ class ChunkManager extends Group {
         this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
 
         // Create initial chunks
+        this.state.numChunks = this.state.ringRadius/this.state.width - 1
         this.createInitialChunks();
     }
 
@@ -89,7 +90,7 @@ class ChunkManager extends Group {
         }
 
         // Add chunk
-        if (this.state.chunks.length < this.state.numChunks) {
+        if (this.state.chunks.length < this.state.ringRadius/this.state.width - 3) {
             this.addChunk();
         }
 
