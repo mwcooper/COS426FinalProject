@@ -16,8 +16,8 @@ const scene = new SeedScene(camera);
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
-camera.position.set(-10,0,50);
-camera.lookAt(75,0,-1);
+camera.position.set(-10,0,80);
+camera.lookAt(75,0,75);
 camera.rotateZ(1.5 * Math.PI);
 
 

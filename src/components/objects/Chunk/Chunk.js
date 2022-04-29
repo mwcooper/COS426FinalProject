@@ -29,7 +29,8 @@ class Chunk extends Group {
             resolution: parent.state.resolution,
             noiseScale: parent.state.noiseScale,
             noiseStrength: parent.state.noiseStrength,
-            growColorLife: parent.state.growColorLife,
+            growthBoundaries: parent.state.growthBoundaries,
+            ringRadius: parent.state.ringRadius,
 
             updateList: [],
         };
@@ -126,17 +127,25 @@ class Chunk extends Group {
             })
         );
 
-        mesh.position.z = -20;
         mesh.position.x = this.state.xOffset;
 
         return mesh;
     }
 
+    translate(speed) {
+        const x = this.terrainMesh.position.x;
+        const currZ = this.terrainMesh.position.z;
+        const radius = this.state.ringRadius;
+        if (x < radius) {
+            const z = -Math.sqrt(-(x ** 2) + radius**2) + radius - currZ;
+            this.terrainMesh.translateZ(z);
+        }
+        this.terrainMesh.translateX(-speed);
+    }
+
     colorTerrain() {
         let geo = this.terrainMesh.geometry;
         const noiseStrength = this.state.noiseStrength;
-
-        // console.log(this.terrainMesh)
 
         // Set colors:
         //for every face
@@ -155,7 +164,6 @@ class Chunk extends Group {
                 c.z = 0;
             }
 
-            // return f.color.set(0x0fffff * Math.random());
             //assign colors based on the highest point of the face
             const max = Math.max(a.z, b.z, c.z);
             if (max <= 0.25 * noiseStrength) {
@@ -166,12 +174,12 @@ class Chunk extends Group {
                 return f.color.set(0x44ccff);
             }
             if (max <= 0.3 * noiseStrength) {
-                // yellow (beach) color
-                return f.color.set(0xdec362);
+                // brown (beach) color
+                return f.color.set(0x5c4033);
             }
             if (max <= 0.5 * noiseStrength) {
                 // green (grass)
-                return f.color.set(0x228811);
+                return f.color.set(0x008000);
             }
             if (max <= 0.7 * noiseStrength) {
                 // cliff grey
@@ -196,7 +204,6 @@ class Chunk extends Group {
         const geo = this.terrainMesh.geometry;
 
         // returns alpha value from 0 to 1
-
         // these two functions from https://codepen.io/trys/pen/XWrNRze:
         const clamp = (a, min = 0, max = 1) => Math.min(max, Math.max(min, a));
         const invlerp = (x, y, a) => clamp((a - x) / (y - x));
@@ -204,14 +211,12 @@ class Chunk extends Group {
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
             let alpha = invlerp(
-                this.state.growColorLife[0],
-                this.state.growColorLife[1],
+                this.state.growthBoundaries[0],
+                this.state.growthBoundaries[1],
                 vertex.x + this.terrainMesh.position.x
             );
             vertex.z = this.heightMap[i] * alpha;
         }
-
-        // console.log(this.state.growColorLife[0], this.state.growColorLife[1], geo.vertices[10].x, invlerp(this.state.growColorLife[0], this.state.growColorLife[1], geo.vertices[10].x))
 
         geo.verticesNeedUpdate = true;
     }
@@ -224,15 +229,15 @@ class Chunk extends Group {
         const { speed, updateList } = this.state;
 
         // Translate the chunk (move it closer and update the curve)
-        this.terrainMesh.translateX(-speed);
+        this.translate(speed);
 
         // Update terrain based on slider parameters (this seems difficult. Dreamworld used presets. Im guessing it was because it was too hard to livetime update)
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
         if (
-            this.terrainMesh.position.x < this.state.growColorLife[0] &&
+            this.terrainMesh.position.x < this.state.growthBoundaries[0] &&
             this.terrainMesh.position.x + this.state.width / 2 >
-                this.state.growColorLife[1]
+                this.state.growthBoundaries[1]
         ) {
             this.growTerrain();
             this.colorTerrain();
@@ -240,7 +245,7 @@ class Chunk extends Group {
 
         // Add color as a function of this.terrainMesh.x
 
-        // Add plants as a function of this.terrainMesh.x
+        // Add plants, clouds as a function of this.terrainMesh.x
 
         // Add moving life as a function of this.terrainMesh.x
 

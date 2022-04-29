@@ -22,7 +22,7 @@ class ChunkManager extends Group {
             updateList: [],
             chunks: [],
 
-            numChunks: 15,
+            numChunks: 25,
             width: 30,
             height: 150,
             xOffset: 0,
@@ -31,8 +31,18 @@ class ChunkManager extends Group {
             resolution: 1,
             noiseScale: 50,
             noiseStrength: 40,
-            growColorLife: [],
+            growthBoundaries: [],
+            ringRadius: 1000,
         };
+
+        this.state.growthBoundaries = [
+            15 * this.state.width,
+            5 * this.state.width,
+            4 * this.state.width,
+            3 * this.state.width,
+            2 * this.state.width,
+            1 * this.state.width,
+        ];
 
         // Add self to parent's update list
         parent.addToUpdateList(this);
@@ -46,10 +56,6 @@ class ChunkManager extends Group {
         this.state.gui.add(this.state, 'noiseScale', 20, 100).step(1);
         this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
 
-        this.state.growColorLife = [10*this.state.width,
-            5*this.state.width, 4*this.state.width, 3*this.state.width, 
-            2*this.state.width, 1*this.state.width];
-
         // Create initial chunks
         this.createInitialChunks();
     }
@@ -60,7 +66,7 @@ class ChunkManager extends Group {
         }
     }
 
-    addChunk(){
+    addChunk() {
         const chunk = new Chunk(this);
         this.add(chunk.terrainMesh);
         this.state.chunks.push(chunk);
