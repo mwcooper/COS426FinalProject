@@ -16,7 +16,7 @@ class ChunkManager extends Group {
         // Init state
         this.state = {
             gui: parent.state.gui,
-            speed: 0.2,
+            speed: 0.1,
 
             updateList: [],
             chunks: [],
@@ -38,7 +38,7 @@ class ChunkManager extends Group {
 
         this.state.growthBoundaries = [
             30 * this.state.width,
-            15 * this.state.width,
+            7 * this.state.width,
             4 * this.state.width,
             3 * this.state.width,
             2 * this.state.width,
@@ -56,7 +56,7 @@ class ChunkManager extends Group {
         const EPS = 2*Math.PI/1000
         this.state.chordTheta = 2*Math.asin(this.state.width/2/this.state.ringRadius)-EPS;
         //this.state.numChunks = Math.floor(0.5 * Math.PI / this.state.chordTheta);
-        this.state.numChunks = 40;
+        this.state.numChunks = 39;
 
         // Add self to parent's update list
         parent.addToUpdateList(this);
