@@ -11,16 +11,20 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 
 // Initialize core ThreeJS components
-const camera = new PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000);
+const camera = new PerspectiveCamera(
+    50,
+    window.innerWidth / window.innerHeight,
+    1,
+    2000
+);
 const scene = new SeedScene(camera);
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
-camera.position.set(0,0,80);
-camera.lookAt(1000,0,1000);
-camera.lookAt(75,0,75);
+camera.position.set(0, 0, 80);
+camera.lookAt(1000, 0, 1000);
+camera.lookAt(75, 0, 75);
 camera.rotateZ(1.5 * Math.PI);
-
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -38,9 +42,33 @@ document.body.appendChild(canvas);
 // controls.maxDistance = 16;
 // controls.update();
 
+document.onkeydown = function (e) {
+    switch (e.key) {
+        case 'ArrowRight':
+            if (camera.position.y > -75) {
+                camera.translateX(0.6);
+            }
+            break;
+        case 'ArrowLeft':
+            if (camera.position.y < 75) {
+                camera.translateX(-0.6);
+            }
+            break;
+    }
+};
+
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     //controls.update();
+    // Recenter the camera
+    if (!(-0.4 < camera.position.y && camera.position.y < 0.4)) {
+        if (camera.position.y > -0.1) {
+            camera.translateX(0.3);
+        }
+        if (camera.position.y < 0.1) {
+            camera.translateX(-0.3);
+        }
+    }
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);

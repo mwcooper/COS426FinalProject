@@ -27,8 +27,8 @@ class SeedScene extends Scene {
         
 
         // Debugging X axis is red. The Y axis is green. The Z axis is blue.
-        const axesHelper = new AxesHelper(5);
-        this.add(axesHelper);
+        //const axesHelper = new AxesHelper(5);
+        //this.add(axesHelper);
     }
 
     addToUpdateList(object) {
