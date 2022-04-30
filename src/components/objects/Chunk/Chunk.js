@@ -110,9 +110,17 @@ class Chunk extends Group {
             this.heightMap[i] *= alpha;
 
             // Modifications
-            if (this.heightMap[i] > 0.7 * noiseStrength)
+            if (this.heightMap[i] > 0.7 * noiseStrength) {
                 this.heightMap[i] **= 1.012; //exaggerate the peaks
+            }
 
+            // make the left and right edges at 0
+            if ((vertex.y + height / 2) % height == 0) {
+                vertex.z = 0;
+                this.heightMap[i] = 0;
+            }
+
+            // dont jitter edges of the mesh
             if (
                 (vertex.x + width / 2) % width != 0 &&
                 (vertex.y + height / 2) % height != 0
@@ -162,7 +170,7 @@ class Chunk extends Group {
             }
 
             // color each chunk differently for debugging:
-            // color = 0x333333 * this.heightMap[100];
+            //color = 0x333333 * this.heightMap[100];
 
             this.faceColors.push(color);
         });
@@ -235,7 +243,6 @@ class Chunk extends Group {
                 (((rColor - rFlat) * alpha + rFlat) << 16) |
                 (((gColor - gFlat) * alpha + gFlat) << 8) |
                 ((bColor - bFlat) * alpha + bFlat);
-
 
             return f.color.setHex(lerp);
             // return f.color.setHex(color);

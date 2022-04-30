@@ -39,7 +39,7 @@ class ChunkManager extends Group {
         this.state.growthBoundaries = [
             25 * this.state.width,
             10 * this.state.width,
-            9 * this.state.width,
+            14 * this.state.width,
             6 * this.state.width,
             2 * this.state.width,
             1 * this.state.width,
@@ -53,7 +53,7 @@ class ChunkManager extends Group {
             flatShading: true,
         });
 
-        const EPS = 2*Math.PI/1000
+        const EPS = 2*Math.PI/2000
         this.state.chordTheta = 2*Math.asin(this.state.width/2/this.state.ringRadius)-EPS;
         //this.state.numChunks = Math.floor(0.5 * Math.PI / this.state.chordTheta);
         this.state.numChunks = 39;
@@ -66,7 +66,7 @@ class ChunkManager extends Group {
         // TODO make sliders work in realtime. Solution: use chunk update function?
         this.state.gui.add(this.state, 'speed', 0.01, 3.0).step(0.1);
         this.state.gui.add(this.state, 'seed', 0, 10).step(1);
-        this.state.gui.add(this.state, 'resolution', 1, 4).step(1); // Dont make this too big (crashes due to too much memory overflow)
+        //this.state.gui.add(this.state, 'resolution', 1, 4).step(1); // Dont make this too big (crashes due to too much memory overflow)
         this.state.gui.add(this.state, 'noiseScale', 20, 100).step(1);
         this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
 
