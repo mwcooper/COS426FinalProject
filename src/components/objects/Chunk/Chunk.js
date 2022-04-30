@@ -105,14 +105,20 @@ class Chunk extends Group {
             // vertex.z = noise * noiseStrength;
             this.heightMap.push(noise * noiseStrength);
 
+            // raise sides, lower middle
+            let alpha = map(Math.abs(vertex.y), 0, height/2, 0.8, 1.2);
+            this.heightMap[i] *= alpha
+
             // Modifications
             if (this.heightMap[i] > 0.7 * noiseStrength)
                 this.heightMap[i] **= 1.012; //exaggerate the peaks
 
-            if ((vertex.x + width / 2) % width != 0) {
+            if ((vertex.x + width / 2) % width != 0 && (vertex.y + height / 2) % height != 0) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
                 vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
             }
+
+            // squish mesh in proportion to angle of rotation
         }
 
         // set faceColors with end colors
@@ -156,6 +162,9 @@ class Chunk extends Group {
                 color = 0xcccccc;
             }
 
+            // color each chunk differently for debugging:
+            // color = 0x333333 * this.heightMap[100];
+
             this.faceColors.push(color);
 
         });
@@ -166,6 +175,7 @@ class Chunk extends Group {
         geo.computeFlatVertexNormals();
         const mesh = new Mesh(geo, this.state.meshMaterial);
         const radius = this.state.ringRadius;
+
         const thetaOffset = this.state.thetaOffset;
         mesh.position.x = radius * Math.sin(thetaOffset);
         mesh.position.z = radius - radius * Math.cos(thetaOffset);
@@ -212,7 +222,7 @@ class Chunk extends Group {
             else if (xPos < near) {
                 // Full color
                 alpha = 1.0;
-            } else if (near < xPos && xPos < far) {
+            } else {
                 // Interpolate
                 alpha = 1 - (xPos - near) / (far - near);
             }
