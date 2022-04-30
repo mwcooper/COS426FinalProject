@@ -106,14 +106,17 @@ class Chunk extends Group {
             this.heightMap.push(noise * noiseStrength);
 
             // raise sides, lower middle
-            let alpha = map(Math.abs(vertex.y), 0, height/2, 0.8, 1.2);
-            this.heightMap[i] *= alpha
+            let alpha = map(Math.abs(vertex.y), 0, height / 2, 0.8, 1.2);
+            this.heightMap[i] *= alpha;
 
             // Modifications
             if (this.heightMap[i] > 0.7 * noiseStrength)
                 this.heightMap[i] **= 1.012; //exaggerate the peaks
 
-            if ((vertex.x + width / 2) % width != 0 && (vertex.y + height / 2) % height != 0) {
+            if (
+                (vertex.x + width / 2) % width != 0 &&
+                (vertex.y + height / 2) % height != 0
+            ) {
                 vertex.x += map(Math.random(), 0, 1, -0.5, 0.5); //jitter x
                 vertex.y += map(Math.random(), 0, 1, -0.5, 0.5); //jitter y
             }
@@ -144,20 +147,16 @@ class Chunk extends Group {
             if (max <= 0.25 * noiseStrength) {
                 // blue (water) 0x44ccff
                 color = 0x44ccff;
-            }
-            else if (max <= 0.28 * noiseStrength) {
+            } else if (max <= 0.28 * noiseStrength) {
                 // brown (beach) 0x483C32
                 color = 0x483c32;
-            }
-            else if (max <= 0.5 * noiseStrength) {
+            } else if (max <= 0.5 * noiseStrength) {
                 // green (grass) 0x356520
                 color = 0x356520;
-            }
-            else if (max <= 0.7 * noiseStrength) {
+            } else if (max <= 0.7 * noiseStrength) {
                 // grey (cliff) 0x335577
                 color = 0x335577;
-            }
-            else {
+            } else {
                 // white (snow) 0xcccccc
                 color = 0xcccccc;
             }
@@ -166,7 +165,6 @@ class Chunk extends Group {
             // color = 0x333333 * this.heightMap[100];
 
             this.faceColors.push(color);
-
         });
 
         geo.verticesNeedUpdate = true;
@@ -217,35 +215,33 @@ class Chunk extends Group {
             const near = this.state.growthBoundaries[3];
             const far = this.state.growthBoundaries[2];
             if (xPos >= far) {
-                return f.color.setHex(flat)
-            }
-            else if (xPos < near) {
+                return f.color.setHex(flat);
+            } else if (xPos < near) {
                 // Full color
                 alpha = 1.0;
             } else {
                 // Interpolate
-                alpha = 1 - (xPos - near) / (far - near);
+                alpha = 1.0 - (xPos - near) / (far - near);
             }
-            
 
             // const flat = 0x777777;
             const rFlat = (flat >> 16) & 0xff;
-            const gFlat = (flat >> 9) & 0xff;
+            const gFlat = (flat >> 8) & 0xff;
             const bFlat = flat & 0xff;
             const rColor = (color >> 16) & 0xff;
-            const gColor = (color >> 9) & 0xff;
+            const gColor = (color >> 8) & 0xff;
             const bColor = color & 0xff;
             const lerp =
                 (((rColor - rFlat) * alpha + rFlat) << 16) |
-                (((gColor - gFlat) * alpha + rFlat) << 8) |
-                ((bColor - bFlat) * alpha + rFlat);
+                (((gColor - gFlat) * alpha + gFlat) << 8) |
+                ((bColor - bFlat) * alpha + bFlat);
+
 
             return f.color.setHex(lerp);
             // return f.color.setHex(color);
-            
         });
 
-        // geo.verticesNeedUpdate = true; 
+        // geo.verticesNeedUpdate = true;
         geo.computeFlatVertexNormals();
         geo.colorsNeedUpdate = true;
     }
