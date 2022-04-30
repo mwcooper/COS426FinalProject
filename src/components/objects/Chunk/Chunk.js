@@ -10,6 +10,7 @@ import {
     LoopRepeat,
     ClampToEdgeWrapping,
     Vector3,
+    Color,
 } from 'three';
 import SimplexNoise from 'simplex-noise';
 
@@ -159,31 +160,56 @@ class Chunk extends Group {
                 c.z = 0;
             }
 
-            //assign colors based on the highest point of the face
-            const max = Math.max(a.z, b.z, c.z);
-            if (max <= 0.25 * noiseStrength) {
-                // // make water flat
-                return f.color.set(0x44ccff);
+            // Add color as we get closer
+            let alpha = 0;
+            const xPos = (a.x + b.x + c.x) / 3;
+            const near = this.state.growthBoundaries[1];
+            const far = this.state.growthBoundaries[0];
+            if (xPos < near) {
+                // Full color
+                alpha = 1.0;
+            } else if (near < xPos && xPos < far) {
+                // Interpolate
+                alpha = (xPos - near) / (far - near);
             }
-            if (max <= 0.3 * noiseStrength) {
-                // brown (beach) color
-                return f.color.set(0x5c4033);
+            let color = 0x000000;
+
+            // assign colors based on the highest point of the face
+            let max = Math.max(a.z, b.z, c.z);
+            if (max <= 0.25 * noiseStrength) {
+                // blue (water) 0x44ccff
+                color = 0x44ccff;
+            }
+            if (max <= 0.28 * noiseStrength) {
+                // brown (beach) 0x483C32
+                color = 0x483c32;
             }
             if (max <= 0.5 * noiseStrength) {
-                // green (grass)
-                return f.color.set(0x008000);
+                // green (grass) 0x356520
+                color = 0x356520;
             }
             if (max <= 0.7 * noiseStrength) {
-                // cliff grey
-                return f.color.set(0x335577);
+                // grey (cliff) 0x335577
+                color = 0x335577;
             }
             if (max <= 0.9 * noiseStrength) {
-                // snow white
-                return f.color.set(0xcccccc);
+                // white (snow) 0xcccccc
+                color = 0xcccccc;
             }
 
-            //otherwise, return white
-            f.color.set('white');
+            const flat = 0x777777;
+            const rFlat = (flat >> 16) & 0xff;
+            const gFlat = (flat >> 9) & 0xff;
+            const bFlat = flat & 0xff;
+            const rColor = (color >> 16) & 0xff;
+            const gColor = (color >> 9) & 0xff;
+            const bColor = color & 0xff;
+            const lerp =
+                (((rColor - rFlat) * alpha + rFlat) << 16) |
+                (((gColor - gFlat) * alpha + rFlat) << 8) |
+                ((bColor - bFlat) * alpha + rFlat);
+
+            return f.color.setHex(color);
         });
 
         geo.verticesNeedUpdate = true;
