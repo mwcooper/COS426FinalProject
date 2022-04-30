@@ -41,6 +41,7 @@ class Chunk extends Group {
         parent.addToUpdateList(this);
 
         this.heightMap = [];
+        this.faceColors = [];
         this.terrainMesh = this.generateTerrain();
         this.colorTerrain();
     }
@@ -114,8 +115,53 @@ class Chunk extends Group {
             }
         }
 
+        // set faceColors with end colors
+        geo.faces.forEach((f) => {
+            //get three z values for the face
+            const a = this.heightMap[f.a];
+            const b = this.heightMap[f.b];
+            const c = this.heightMap[f.c];
+
+            //if average is below water, set to 0
+            //alt: color transparent to show the underwater landscape
+            const avgz = (a + b + c) / 3;
+            if (avgz < 0) {
+                this.heightMap[f.a] = 0;
+                this.heightMap[f.b] = 0;
+                this.heightMap[f.c] = 0;
+            }
+
+            // assign colors based on the highest point of the face
+            let color = 0x000000;
+            let max = Math.max(a, b, c);
+            // console.log(max, 0.25 * noiseStrength)
+            if (max <= 0.25 * noiseStrength) {
+                // blue (water) 0x44ccff
+                color = 0x44ccff;
+            }
+            else if (max <= 0.28 * noiseStrength) {
+                // brown (beach) 0x483C32
+                color = 0x483c32;
+            }
+            else if (max <= 0.5 * noiseStrength) {
+                // green (grass) 0x356520
+                color = 0x356520;
+            }
+            else if (max <= 0.7 * noiseStrength) {
+                // grey (cliff) 0x335577
+                color = 0x335577;
+            }
+            else {
+                // white (snow) 0xcccccc
+                color = 0xcccccc;
+            }
+
+            this.faceColors.push(color);
+
+        });
+
         geo.verticesNeedUpdate = true;
-        geo.colorsNeedUpdate = true;
+        // geo.colorsNeedUpdate = true;
 
         geo.computeFlatVertexNormals();
         const mesh = new Mesh(geo, this.state.meshMaterial);
@@ -145,59 +191,34 @@ class Chunk extends Group {
 
         // Set colors:
         // for every face
+        let counter = 0;
         geo.faces.forEach((f) => {
             //get three verts for the face
             const a = geo.vertices[f.a];
             const b = geo.vertices[f.b];
             const c = geo.vertices[f.c];
 
-            //if average is below water, set to 0
-            //alt: color transparent to show the underwater landscape
-            const avgz = (a.z + b.z + c.z) / 3;
-            if (avgz < 0) {
-                a.z = 0;
-                b.z = 0;
-                c.z = 0;
-            }
+            const flat = 0x777777;
+            let color = this.faceColors[counter++];
 
             // Add color as we get closer
             let alpha = 0;
-            const xPos = (a.x + b.x + c.x) / 3;
-            const near = this.state.growthBoundaries[1];
-            const far = this.state.growthBoundaries[0];
-            if (xPos < near) {
+            const xPos = (a.x + b.x + c.x) / 3 + this.terrainMesh.position.x;
+            const near = this.state.growthBoundaries[3];
+            const far = this.state.growthBoundaries[2];
+            if (xPos >= far) {
+                return f.color.setHex(flat)
+            }
+            else if (xPos < near) {
                 // Full color
                 alpha = 1.0;
             } else if (near < xPos && xPos < far) {
                 // Interpolate
-                alpha = (xPos - near) / (far - near);
+                alpha = 1 - (xPos - near) / (far - near);
             }
-            let color = 0x000000;
+            
 
-            // assign colors based on the highest point of the face
-            let max = Math.max(a.z, b.z, c.z);
-            if (max <= 0.25 * noiseStrength) {
-                // blue (water) 0x44ccff
-                color = 0x44ccff;
-            }
-            if (max <= 0.28 * noiseStrength) {
-                // brown (beach) 0x483C32
-                color = 0x483c32;
-            }
-            if (max <= 0.5 * noiseStrength) {
-                // green (grass) 0x356520
-                color = 0x356520;
-            }
-            if (max <= 0.7 * noiseStrength) {
-                // grey (cliff) 0x335577
-                color = 0x335577;
-            }
-            if (max <= 0.9 * noiseStrength) {
-                // white (snow) 0xcccccc
-                color = 0xcccccc;
-            }
-
-            const flat = 0x777777;
+            // const flat = 0x777777;
             const rFlat = (flat >> 16) & 0xff;
             const gFlat = (flat >> 9) & 0xff;
             const bFlat = flat & 0xff;
@@ -209,10 +230,12 @@ class Chunk extends Group {
                 (((gColor - gFlat) * alpha + rFlat) << 8) |
                 ((bColor - bFlat) * alpha + rFlat);
 
-            return f.color.setHex(color);
+            return f.color.setHex(lerp);
+            // return f.color.setHex(color);
+            
         });
 
-        geo.verticesNeedUpdate = true;
+        // geo.verticesNeedUpdate = true; 
         geo.computeFlatVertexNormals();
         geo.colorsNeedUpdate = true;
     }
@@ -225,14 +248,14 @@ class Chunk extends Group {
             const xPos = this.terrainMesh.position.x + vertex.x;
             const near = this.state.growthBoundaries[1];
             const far = this.state.growthBoundaries[0];
+            const EPS = 2;
             // Close full heights, in between interpolate, far flat
             if (xPos < near) {
                 // Full height
                 vertex.z = this.heightMap[i];
-            } else if (near < xPos && xPos < far) {
+            } else if (near < xPos && xPos - EPS < far) {
                 // Interpolate
-                const EPS = 2;
-                const alpha = (xPos + EPS - far) / (near - far);
+                const alpha = (xPos - far) / (near - far);
                 vertex.z = this.heightMap[i] * alpha;
             } else {
                 // Flat
