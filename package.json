@@ -1,9 +1,10 @@
 {
+  "homepage": "http://mwcooper.github.io/COS426FinalProject",
   "name": "procedural-terrain-generator-from-flat-to-life",
   "repository": "https://github.com/mwcooper/COS426FinalProject",
   "version": "1.0.0",
   "title": "Life Flight",
-  "description": "Flying terrain generator that increases in complexity as the camera gets closer to the terrain",
+  "description": "Flying terrain generator that increases in complexity as the terrain gets closer to the camera",
   "keywords": [
     "Princeton",
     "graphics",
