@@ -42,17 +42,28 @@ document.body.appendChild(canvas);
 // controls.maxDistance = 16;
 // controls.update();
 
+
+let yAcc = 0;
+let aRate = 0;
+let yVelocity = 0;
 document.onkeydown = function (e) {
     switch (e.key) {
         case 'ArrowRight':
-            if (camera.position.y > -75) {
-                camera.translateX(0.6);
-            }
+            yVelocity = -0.6;
             break;
         case 'ArrowLeft':
-            if (camera.position.y < 75) {
-                camera.translateX(-0.6);
-            }
+            yVelocity = 0.6
+            break;
+    }
+};
+
+document.onkeyup = function (e) {
+    switch (e.key) {
+        case 'ArrowRight':
+            yVelocity = 0;
+            break;
+        case 'ArrowLeft':
+            yVelocity = 0;
             break;
     }
 };
@@ -61,14 +72,23 @@ document.onkeydown = function (e) {
 const onAnimationFrameHandler = (timeStamp) => {
     //controls.update();
     // Recenter the camera
-    if (!(-10.4 < camera.position.y && camera.position.y < 10.4)) {
-        if (camera.position.y > -0.1) {
-            camera.translateX(0.3);
-        }
-        if (camera.position.y < 0.1) {
-            camera.translateX(-0.3);
-        }
+    // if (!(-10.4 < camera.position.y && camera.position.y < 10.4)) {
+    //     if (camera.position.y > -0.1) {
+    //         camera.translateX(0.3);
+    //     }
+    //     if (camera.position.y < 0.1) {
+    //         camera.translateX(-0.3);
+    //     }
+    // }
+    camera.position.y += yVelocity
+    if (camera.position.y > 70) {
+        camera.position.y = 70
+    } else if (camera.position.y < -70) {
+        camera.position.y = -70
     }
+
+
+
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
