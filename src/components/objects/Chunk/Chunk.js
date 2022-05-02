@@ -162,6 +162,20 @@ class Chunk extends Group {
             
         }
 
+        function lerpColors(c1, c2, alpha) {
+            const rC1 = (c1 >> 16) & 0xff;
+            const gC1 = (c1 >> 8) & 0xff;
+            const bC1 = c1 & 0xff;
+            const rC2 = (c2 >> 16) & 0xff;
+            const gC2 = (c2 >> 8) & 0xff;
+            const bC2 = c2 & 0xff;
+            const lerp =
+                (((rC2 - rC1) * alpha + rC1) << 16) |
+                (((gC2 - gC1) * alpha + gC1) << 8) |
+                ((bC2 - bC1) * alpha + bC1);
+            return lerp
+        }
+
         // set faceColors with end colors
         geo.faces.forEach((f) => {
             //get three z values for the face
@@ -188,23 +202,20 @@ class Chunk extends Group {
             } else if (max <= 0.55 * noiseStrength) {
                 // green --> grey (lerp)
                 const grass = 0x356520;
-                const cliff = 0x335577
+                const cliff = 0x335577;
 
                 const alpha = map(max, 0.45*noiseStrength, 0.55*noiseStrength, 0, 1)
-                const rGrass = (grass >> 16) & 0xff;
-                const gGrass = (grass >> 8) & 0xff;
-                const bGrass = grass & 0xff;
-                const rCliff = (cliff >> 16) & 0xff;
-                const gCliff = (cliff >> 8) & 0xff;
-                const bCliff = cliff & 0xff;
-                const lerp =
-                    (((rCliff - rGrass) * alpha + rGrass) << 16) |
-                    (((gCliff - gGrass) * alpha + gGrass) << 8) |
-                    ((bCliff - bGrass) * alpha + bGrass);
-                color = lerp
+                color = lerpColors(grass, cliff, alpha)
             } else if (max <= 0.7 * noiseStrength) {
                 // grey (cliff) 0x335577
                 color = 0x335577;
+            } else if (max <= 0.9 * noiseStrength) {
+                // green --> grey (lerp)
+                const cliff = 0x335577;
+                const snow = 0xcccccc;
+
+                const alpha = map(max, 0.7*noiseStrength, 0.9*noiseStrength, 0, 1)
+                color = lerpColors(cliff, snow, alpha)
             } else {
                 // white (snow) 0xcccccc
                 color = 0xcccccc;
@@ -245,6 +256,20 @@ class Chunk extends Group {
         let geo = this.terrainMesh.geometry;
         const noiseStrength = this.state.noiseStrength;
 
+        function lerpColors(c1, c2, alpha) {
+            const rC1 = (c1 >> 16) & 0xff;
+            const gC1 = (c1 >> 8) & 0xff;
+            const bC1 = c1 & 0xff;
+            const rC2 = (c2 >> 16) & 0xff;
+            const gC2 = (c2 >> 8) & 0xff;
+            const bC2 = c2 & 0xff;
+            const lerp =
+                (((rC2 - rC1) * alpha + rC1) << 16) |
+                (((gC2 - gC1) * alpha + gC1) << 8) |
+                ((bC2 - bC1) * alpha + bC1);
+            return lerp
+        }
+
         // if ()
 
         // Set colors:
@@ -274,19 +299,7 @@ class Chunk extends Group {
                 alpha = 1.0 - (xPos - near) / (far - near);
             }
 
-            // const flat = 0x777777;
-            const rFlat = (flat >> 16) & 0xff;
-            const gFlat = (flat >> 8) & 0xff;
-            const bFlat = flat & 0xff;
-            const rColor = (color >> 16) & 0xff;
-            const gColor = (color >> 8) & 0xff;
-            const bColor = color & 0xff;
-            const lerp =
-                (((rColor - rFlat) * alpha + rFlat) << 16) |
-                (((gColor - gFlat) * alpha + gFlat) << 8) |
-                ((bColor - bFlat) * alpha + bFlat);
-
-            return f.color.setHex(lerp);
+            return f.color.setHex(lerpColors(flat, color, alpha));
             // return f.color.setHex(color);
         });
 
