@@ -6,7 +6,7 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Vector3, MathUtils } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 
@@ -44,15 +44,17 @@ document.body.appendChild(canvas);
 
 
 let yAcc = 0;
-let aRate = 0;
+let aRate = 0.06;
 let yVelocity = 0;
 document.onkeydown = function (e) {
     switch (e.key) {
         case 'ArrowRight':
-            yVelocity = -0.6;
+            if (yVelocity > -0.6)
+                yAcc = -aRate;
             break;
         case 'ArrowLeft':
-            yVelocity = 0.6
+            if (yVelocity < 0.6)    
+                yAcc = aRate;
             break;
     }
 };
@@ -60,10 +62,10 @@ document.onkeydown = function (e) {
 document.onkeyup = function (e) {
     switch (e.key) {
         case 'ArrowRight':
-            yVelocity = 0;
+            yAcc = 0;
             break;
         case 'ArrowLeft':
-            yVelocity = 0;
+            yAcc = 0;
             break;
     }
 };
@@ -80,12 +82,28 @@ const onAnimationFrameHandler = (timeStamp) => {
     //         camera.translateX(-0.3);
     //     }
     // }
-    camera.position.y += yVelocity
+
+    
     if (camera.position.y > 70) {
         camera.position.y = 70
+        yVelocity = 0
     } else if (camera.position.y < -70) {
         camera.position.y = -70
+        yVelocity = 0
     }
+    if (yVelocity > 0.6) yVelocity = 0.6; if (yVelocity < -0.6) yVelocity = -0.6;
+    
+    if (Math.abs(yAcc) < aRate)
+        if (Math.abs(yVelocity) >= aRate*2)
+            yAcc = -1*Math.sign(yVelocity)*aRate/2
+        else {
+            yVelocity = 0; 
+            yAcc = 0
+        }
+
+    camera.position.y += yVelocity
+    yVelocity += yAcc
+    console.log("interpreted", yAcc, yVelocity)
 
 
 
