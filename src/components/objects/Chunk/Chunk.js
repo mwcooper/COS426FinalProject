@@ -328,9 +328,7 @@ class Chunk extends Group {
                 tree.position.x = vertex.x + this.terrainMesh.position.x
                 tree.position.y = vertex.y + this.terrainMesh.position.y
                 tree.position.z = vertex.z + this.terrainMesh.position.z
-                // tree.position.x = 110
-                // tree.position.z = 40
-                // set scale to 0
+
                 this.parent.add(tree)
                 this.trees.push(tree)
                 // console.log(tree.position.z)
@@ -345,12 +343,12 @@ class Chunk extends Group {
                 // console.log(vertex.x + this.terrainMesh.position.x)
                 tree.position.x = vertex.x + this.terrainMesh.position.x
                 tree.position.y = vertex.y + this.terrainMesh.position.y
-                tree.position.z = vertex.z + this.terrainMesh.position.z - 1.5
+                tree.position.z = vertex.z + this.terrainMesh.position.z - 2.5
                 // console.log(tree.position.z)
 
                 // LERP to "grow"
                 const alpha = (tree.position.x - far) / (near - far);
-                tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1, 1, 1), alpha)
+                tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1.5, 1.5, 1.5), alpha)
                 // console.log(tree.scale, alpha)
 
                 i++

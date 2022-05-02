@@ -37,12 +37,12 @@ class ChunkManager extends Group {
         };
 
         this.state.growthBoundaries = [
-            25 * this.state.width,
+            22 * this.state.width,
             10 * this.state.width,
             14 * this.state.width,
             7 * this.state.width,
             8 * this.state.width,
-            3 * this.state.width,
+            4 * this.state.width,
         ];
 
         // To save memory
