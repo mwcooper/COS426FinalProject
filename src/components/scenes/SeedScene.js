@@ -25,13 +25,6 @@ class SeedScene extends Scene {
         const chunkManager = new ChunkManager(this);
         this.add(lights, chunkManager);
 
-        const tree = new Tree(this);
-        tree.position.x = 100
-        tree.position.z = 100
-        tree.rotateOnAxis(new Vector3(1, 0, 0), Math.PI/2)
-        this.add(tree)
-        
-
         // Debugging X axis is red. The Y axis is green. The Z axis is blue.
         //const axesHelper = new AxesHelper(5);
         //this.add(axesHelper);

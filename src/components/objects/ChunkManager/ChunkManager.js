@@ -40,8 +40,8 @@ class ChunkManager extends Group {
             25 * this.state.width,
             10 * this.state.width,
             14 * this.state.width,
-            6 * this.state.width,
-            2 * this.state.width,
+            7 * this.state.width,
+            7 * this.state.width,
             1 * this.state.width,
         ];
 
@@ -108,6 +108,7 @@ class ChunkManager extends Group {
             chunk.terrainMesh.geometry.dispose()
             //chunk.terrainMesh.material.dispose()
             chunk.terrainMesh = undefined
+            chunk.trees = undefined;
             this.remove(chunk);
         } 
 

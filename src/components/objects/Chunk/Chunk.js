@@ -12,6 +12,7 @@ import {
     Vector3,
     Color,
 } from 'three';
+import { Tree } from '../Tree';
 import SimplexNoise from 'simplex-noise';
 
 class Chunk extends Group {
@@ -37,11 +38,14 @@ class Chunk extends Group {
             updateList: [],
         };
 
+        this.parent = parent;
         // Add self to parent's update list
         parent.addToUpdateList(this);
 
         this.heightMap = [];
         this.faceColors = [];
+        this.treeLocations = [];
+        this.trees = [];
         this.terrainMesh = this.generateTerrain();
         this.colorTerrain();
     }
@@ -122,6 +126,11 @@ class Chunk extends Group {
                 // val = map(val, 1, 4, 0.25*noiseStrength, .5*noiseStrength)
                 // // console.log(val)
                 // this.heightMap[i] = val;
+
+                const treeFreq = 0.01
+                if (Math.random() < treeFreq) {
+                    this.treeLocations.push(i)
+                }
             }
             else if (this.heightMap[i] > 0.7 * noiseStrength) {
                 this.heightMap[i] **= 1.012; //exaggerate the peaks
@@ -219,6 +228,8 @@ class Chunk extends Group {
         let geo = this.terrainMesh.geometry;
         const noiseStrength = this.state.noiseStrength;
 
+        // if ()
+
         // Set colors:
         // for every face
         let counter = 0;
@@ -269,6 +280,8 @@ class Chunk extends Group {
 
     // loop thru each vertex and lerp its new .z based on the vertex's .x between gcl[0] and gcl[1]
     growTerrain() {
+        if( this.terrainMesh.position.x-this.state.width/2 > this.state.growthBoundaries[0])
+            return;
         const geo = this.terrainMesh.geometry;
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
@@ -293,6 +306,47 @@ class Chunk extends Group {
         geo.verticesNeedUpdate = true;
     }
 
+    addFlora() {
+        if (this.terrainMesh.position.x-this.state.width/2 > this.state.growthBoundaries[4])
+            return;
+        const geo = this.terrainMesh.geometry;
+        if (this.trees.length <= 0)
+            this.treeLocations.forEach((t) => {
+                const vertex = geo.vertices[t];
+                // this.add(tree.mesh)
+
+                // console.log("added");
+
+                const tree = new Tree(this);
+                tree.rotateOnAxis(new Vector3(1, 0, 0), Math.PI/2)
+                tree.rotateOnAxis(new Vector3(0, 1, 0), Math.random()*2*Math.PI)
+                tree.position.x = vertex.x + this.terrainMesh.position.x
+                tree.position.y = vertex.y + this.terrainMesh.position.y
+                tree.position.z = vertex.z + this.terrainMesh.position.z
+                // tree.position.x = 110
+                // tree.position.z = 40
+                this.parent.add(tree)
+                this.trees.push(tree)
+                // console.log(tree.position.z)
+            });
+        else {
+            let i = 0;
+            this.treeLocations.forEach((t) => {
+                const vertex = geo.vertices[t];
+                const tree = this.trees[i];
+                // console.log(this.trees.length)
+                // console.log(tree)
+                // console.log(vertex.x + this.terrainMesh.position.x)
+                tree.position.x = vertex.x + this.terrainMesh.position.x
+                tree.position.y = vertex.y + this.terrainMesh.position.y
+                tree.position.z = vertex.z + this.terrainMesh.position.z - 1.5
+                // console.log(tree.position.z)
+                i++
+            });
+        }
+        
+    }
+
     addToUpdateList(object) {
         this.state.updateList.push(object);
     }
@@ -312,6 +366,7 @@ class Chunk extends Group {
         this.colorTerrain();
 
         // Add plants, clouds as a function of this.terrainMesh.x
+        this.addFlora();
 
         // Add moving life as a function of this.terrainMesh.x
 

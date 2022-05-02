@@ -16,9 +16,12 @@ class Tree extends Group {
         const loader = new GLTFLoader();
 
         this.name = 'tree';
+        this.mesh = undefined;
         loader.load(MODEL, (gltf) => {
             this.add(gltf.scene);
         });
+
+
 
         // Add self to parent's update list
         // parent.addToUpdateList(this);
