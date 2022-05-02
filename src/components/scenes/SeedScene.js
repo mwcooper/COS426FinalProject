@@ -25,6 +25,9 @@ class SeedScene extends Scene {
         const chunkManager = new ChunkManager(this);
         this.add(lights, chunkManager);
 
+        
+        
+
         // Debugging X axis is red. The Y axis is green. The Z axis is blue.
         //const axesHelper = new AxesHelper(5);
         //this.add(axesHelper);

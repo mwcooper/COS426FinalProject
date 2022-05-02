@@ -22,7 +22,7 @@ const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
 camera.position.set(0, 0, 80);
-camera.lookAt(1000, 0, 1000);
+// camera.lookAt(1000, 0, 1000);
 camera.lookAt(75, 0, 75);
 camera.rotateZ(1.5 * Math.PI);
 

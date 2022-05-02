@@ -11,6 +11,8 @@ import {
     ClampToEdgeWrapping,
     Vector3,
     Color,
+    Object3D,
+    VectorKeyframeTrack,
 } from 'three';
 import { Tree } from '../Tree';
 import SimplexNoise from 'simplex-noise';
@@ -309,6 +311,9 @@ class Chunk extends Group {
     addFlora() {
         if (this.terrainMesh.position.x-this.state.width/2 > this.state.growthBoundaries[4])
             return;
+
+        const near = this.state.growthBoundaries[5];
+        const far = this.state.growthBoundaries[4];
         const geo = this.terrainMesh.geometry;
         if (this.trees.length <= 0)
             this.treeLocations.forEach((t) => {
@@ -325,6 +330,7 @@ class Chunk extends Group {
                 tree.position.z = vertex.z + this.terrainMesh.position.z
                 // tree.position.x = 110
                 // tree.position.z = 40
+                // set scale to 0
                 this.parent.add(tree)
                 this.trees.push(tree)
                 // console.log(tree.position.z)
@@ -341,10 +347,22 @@ class Chunk extends Group {
                 tree.position.y = vertex.y + this.terrainMesh.position.y
                 tree.position.z = vertex.z + this.terrainMesh.position.z - 1.5
                 // console.log(tree.position.z)
+
+                // LERP to "grow"
+                const alpha = (tree.position.x - far) / (near - far);
+                tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1, 1, 1), alpha)
+                // console.log(tree.scale, alpha)
+
                 i++
             });
         }
         
+    }
+
+    removeFlora() {
+        this.trees.forEach((tree) => {
+            this.parent.remove(tree)
+        });
     }
 
     addToUpdateList(object) {
