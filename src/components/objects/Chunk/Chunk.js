@@ -110,9 +110,21 @@ class Chunk extends Group {
             this.heightMap[i] *= alpha;
 
             // Modifications
-            if (this.heightMap[i] > 0.7 * noiseStrength) {
+            if (this.heightMap[i] <= 0.25 * noiseStrength) {
+                // set water level to same height
+                this.heightMap[i] = 0.25 * noiseStrength;
+            } else if (this.heightMap[i] < 0.5 * noiseStrength) {
+                // let val = map(this.heightMap[i], 0.25*noiseStrength, 0.5*noiseStrength, 1, 2)
+                // // console.log(val)
+                // val = val*val
+                // val = map(val, 1, 4, 0.25*noiseStrength, .5*noiseStrength)
+                // // console.log(val)
+                // this.heightMap[i] = val;
+            }
+            else if (this.heightMap[i] > 0.7 * noiseStrength) {
                 this.heightMap[i] **= 1.012; //exaggerate the peaks
             }
+            
 
             // make the left and right edges at 0
             if ((vertex.y + height / 2) % height == 0) {
@@ -142,11 +154,6 @@ class Chunk extends Group {
             //if average is below water, set to 0
             //alt: color transparent to show the underwater landscape
             const avgz = (a + b + c) / 3;
-            if (avgz < 0) {
-                this.heightMap[f.a] = 0;
-                this.heightMap[f.b] = 0;
-                this.heightMap[f.c] = 0;
-            }
 
             // assign colors based on the highest point of the face
             let color = 0x000000;
@@ -155,10 +162,11 @@ class Chunk extends Group {
             if (max <= 0.25 * noiseStrength) {
                 // blue (water) 0x44ccff
                 color = 0x44ccff;
-            } else if (max <= 0.28 * noiseStrength) {
+            } else if (max < 0.28 * noiseStrength) {
                 // brown (beach) 0x483C32
                 color = 0x483c32;
             } else if (max <= 0.5 * noiseStrength) {
+
                 // green (grass) 0x356520
                 color = 0x356520;
             } else if (max <= 0.7 * noiseStrength) {

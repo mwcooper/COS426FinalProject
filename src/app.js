@@ -61,7 +61,7 @@ document.onkeydown = function (e) {
 const onAnimationFrameHandler = (timeStamp) => {
     //controls.update();
     // Recenter the camera
-    if (!(-0.4 < camera.position.y && camera.position.y < 0.4)) {
+    if (!(-10.4 < camera.position.y && camera.position.y < 10.4)) {
         if (camera.position.y > -0.1) {
             camera.translateX(0.3);
         }

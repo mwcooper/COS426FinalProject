@@ -85,6 +85,13 @@ class ChunkManager extends Group {
         this.state.updateList.push(object);
     }
 
+    // moveChunksY(amt) {
+    //     this.state.chunks.forEach(chunk => {
+    //         chunk.terrainMesh.position.y += amt;
+    //         this.state.yPosition += amt;
+    //     });
+    // }
+
     update(timeStamp) {
         this.state.thetaOffset -= 0.001 * this.state.speed*2*Math.PI;
 
@@ -104,10 +111,12 @@ class ChunkManager extends Group {
             this.remove(chunk);
         } 
 
-         // Call update for each chunk in the chunks list
-         for (const chunk of this.state.chunks) {
+        // Call update for each chunk in the chunks list
+        for (const chunk of this.state.chunks) {
             chunk.update(timeStamp);
         }
+
+        // this.moveChunksY(this.state.yVelocity)
        
     }
 }

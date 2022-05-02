@@ -1,7 +1,8 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, AxesHelper } from 'three';
+import { Scene, Color, AxesHelper, Vector3 } from 'three';
 import { Flower, Land, Chunk, ChunkManager, TerrainGenerator } from 'objects';
 import { BasicLights } from 'lights';
+import { Tree } from '../objects/Tree';
 
 class SeedScene extends Scene {
     constructor(camera) {
@@ -24,6 +25,11 @@ class SeedScene extends Scene {
         const chunkManager = new ChunkManager(this);
         this.add(lights, chunkManager);
 
+        const tree = new Tree(this);
+        tree.position.x = 100
+        tree.position.z = 100
+        tree.rotateOnAxis(new Vector3(1, 0, 0), Math.PI/2)
+        this.add(tree)
         
 
         // Debugging X axis is red. The Y axis is green. The Z axis is blue.
