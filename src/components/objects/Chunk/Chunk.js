@@ -171,7 +171,6 @@ class Chunk extends Group {
 
             //if average is below water, set to 0
             //alt: color transparent to show the underwater landscape
-            const avgz = (a + b + c) / 3;
 
             // assign colors based on the highest point of the face
             let color = 0x000000;
@@ -183,10 +182,26 @@ class Chunk extends Group {
             } else if (max < 0.28 * noiseStrength) {
                 // brown (beach) 0x483C32
                 color = 0x483c32;
-            } else if (max <= 0.5 * noiseStrength) {
-
+            } else  if (max <= 0.45 * noiseStrength) {
                 // green (grass) 0x356520
                 color = 0x356520;
+            } else if (max <= 0.55 * noiseStrength) {
+                // green --> grey (lerp)
+                const grass = 0x356520;
+                const cliff = 0x335577
+
+                const alpha = map(max, 0.45*noiseStrength, 0.55*noiseStrength, 0, 1)
+                const rGrass = (grass >> 16) & 0xff;
+                const gGrass = (grass >> 8) & 0xff;
+                const bGrass = grass & 0xff;
+                const rCliff = (cliff >> 16) & 0xff;
+                const gCliff = (cliff >> 8) & 0xff;
+                const bCliff = cliff & 0xff;
+                const lerp =
+                    (((rCliff - rGrass) * alpha + rGrass) << 16) |
+                    (((gCliff - gGrass) * alpha + gGrass) << 8) |
+                    ((bCliff - bGrass) * alpha + bGrass);
+                color = lerp
             } else if (max <= 0.7 * noiseStrength) {
                 // grey (cliff) 0x335577
                 color = 0x335577;
