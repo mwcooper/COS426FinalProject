@@ -49,6 +49,7 @@ class Chunk extends Group {
     generateTerrain() {
         const width = this.state.width;
         const height = this.state.height;
+        const radius = this.state.ringRadius;
 
         // Customizable
         const resolution = this.state.resolution;
@@ -97,6 +98,7 @@ class Chunk extends Group {
         // Create noisy terrain
         // Adapted from https://codepen.io/DonKarlssonSan/pen/deVYoZ?editors=0010
 
+
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
             const x = (vertex.x + this.state.noiseOffset) / scale;
@@ -142,6 +144,11 @@ class Chunk extends Group {
             }
 
             // squish mesh in proportion to angle of rotation
+            
+            let c = (width/2)/radius
+            let b = (radius-this.heightMap[i])*c
+            vertex.x = map(vertex.x, -width/2, width/2, -b, b)
+            
         }
 
         // set faceColors with end colors
@@ -178,7 +185,7 @@ class Chunk extends Group {
             }
 
             // color each chunk differently for debugging:
-            //color = 0x333333 * this.heightMap[100];
+            // color = 0x333333 * this.heightMap[100];
 
             this.faceColors.push(color);
         });
@@ -188,7 +195,6 @@ class Chunk extends Group {
 
         geo.computeFlatVertexNormals();
         const mesh = new Mesh(geo, this.state.meshMaterial);
-        const radius = this.state.ringRadius;
 
         const thetaOffset = this.state.thetaOffset;
         mesh.position.x = radius * Math.sin(thetaOffset);
