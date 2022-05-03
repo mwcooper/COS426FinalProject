@@ -48,14 +48,15 @@ const chunkManager = scene.state.updateList[0]
 let yAcc = 0;
 let aRate = 0.06;
 let yVelocity = 0;
+const maxYVelocity = 0.8
 document.onkeydown = function (e) {
     switch (e.key) {
         case 'ArrowRight':
-            if (yVelocity > -0.6)
+            if (yVelocity > -maxYVelocity)
                 yAcc = -aRate;
             break;
         case 'ArrowLeft':
-            if (yVelocity < 0.6)    
+            if (yVelocity < maxYVelocity)    
                 yAcc = aRate;
             break;
         // case 'ArrowUp':
@@ -101,7 +102,7 @@ const onAnimationFrameHandler = (timeStamp) => {
         camera.position.y = -70
         yVelocity = 0
     }
-    if (yVelocity > 0.6) yVelocity = 0.6; if (yVelocity < -0.6) yVelocity = -0.6;
+    if (yVelocity > maxYVelocity) yVelocity = maxYVelocity; if (yVelocity < -maxYVelocity) yVelocity = -maxYVelocity;
     
     if (Math.abs(yAcc) < aRate/1.9) {
         
@@ -116,7 +117,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     camera.position.y += yVelocity
     yVelocity += yAcc
 
-    scene.airship.rotation.x = -Math.PI/2 - yVelocity
+    scene.airship.rotation.x = -Math.PI/2 - yVelocity*.7
     scene.airship.position.y = camera.position.y
 
     camera.position.x = -chunkManager.state.speed*5

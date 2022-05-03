@@ -56,7 +56,8 @@ class ChunkManager extends Group {
             //flatShading: true,
         });
 
-        const EPS = (2 * Math.PI) / 1000;
+        // 0 is here, so no EPS at the moment
+        const EPS = 0*(2 * Math.PI) / 1000;
         this.state.chordTheta =
             2 * Math.asin(this.state.width / 2 / this.state.ringRadius) - EPS;
         //this.state.numChunks = Math.floor(0.5 * Math.PI / this.state.chordTheta);
