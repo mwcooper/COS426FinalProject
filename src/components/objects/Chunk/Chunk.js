@@ -13,6 +13,7 @@ import {
     Color,
     Object3D,
     VectorKeyframeTrack,
+    TangentSpaceNormalMap,
 } from 'three';
 import { Tree } from '../Tree';
 import SimplexNoise from 'simplex-noise';
@@ -302,24 +303,29 @@ class Chunk extends Group {
     }
 
     // loop thru each vertex and lerp its new .z based on the vertex's .x between gcl[0] and gcl[1]
-    growTerrain(noiseStrength) {
+    growTerrain(noiseStrength, breathingTerrain, timeStamp) {
         if( this.terrainMesh.position.x-this.state.width/2 > this.state.growthBoundaries[0])
             return;
         const geo = this.terrainMesh.geometry;
         for (let i = 0; i < geo.vertices.length; i++) {
             const vertex = geo.vertices[i];
             const xPos = this.terrainMesh.position.x + vertex.x;
+            const yPos = this.terrainMesh.position.y + vertex.y + 30 * Math.sin(xPos/45);
             const near = this.state.growthBoundaries[1];
             const far = this.state.growthBoundaries[0];
             const EPS = 2;
+
+            const time = timeStamp / (10 * 60) * breathingTerrain;
+            const breath = 1.0 - Math.sin(time) * Math.sin((xPos+time)/63) * Math.sin((xPos)/29) * Math.sin((yPos+time)/45)* Math.sin(yPos/75);
+
             // Close full heights, in between interpolate, far flat
             if (xPos < near) {
                 // Full height
-                vertex.z = this.heightMap[i]*noiseStrength;
+                vertex.z = this.heightMap[i] * noiseStrength * breath;
             } else if (near < xPos && xPos - EPS < far) {
                 // Interpolate
                 const alpha = (xPos - far) / (near - far);
-                vertex.z = this.heightMap[i] * alpha * noiseStrength;
+                vertex.z = this.heightMap[i] * alpha * noiseStrength * breath;
             } else {
                 // Flat
                 vertex.z = 0;
@@ -360,7 +366,6 @@ class Chunk extends Group {
                 tree.position.y = vertex.y + this.terrainMesh.position.y
                 tree.position.z = vertex.z + this.terrainMesh.position.z - 2.5
                 
-
                 // LERP to "grow"
                 const alpha = (tree.position.x - far) / (near - far);
                 const maxSize = new Vector3(1.5, 1.5, 1.75).multiplyScalar(
@@ -384,14 +389,14 @@ class Chunk extends Group {
         this.state.updateList.push(object);
     }
 
-    update(timeStamp, speed, noiseStrength) {
+    update(timeStamp, speed, noiseStrength, breathingTerrain) {
         const { updateList } = this.state;
 
         // Translate the chunk (move it closer and update the curve)
         this.moveOnRing(speed);
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
-        this.growTerrain(noiseStrength);
+        this.growTerrain(noiseStrength, breathingTerrain, timeStamp);
 
         // Add color as a function of this.terrainMesh.x
         this.colorTerrain();
