@@ -35,10 +35,10 @@ class SeedScene extends Scene {
 
         this.state.gui.add(this.state, 'shadows').onChange(()=> this.toggleShadows());
 
-        const airship = new Airship();
-        airship.position.x = 50
-        airship.position.z = 50
-        this.add(airship)
+        this.airship = new Airship();
+        this.airship.position.x = 50
+        this.airship.position.z = 50
+        this.add(this.airship)
     }
 
     toggleShadows(){
