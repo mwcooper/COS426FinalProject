@@ -347,6 +347,8 @@ class Chunk extends Group {
                 tree.position.z = vertex.z + this.terrainMesh.position.z
                 this.parent.add(tree)
                 this.trees.push(tree)
+                tree.castShadow = true;
+                tree.recieveShadow = true;
             });
         else {
             let i = 0;
@@ -361,9 +363,10 @@ class Chunk extends Group {
 
                 // LERP to "grow"
                 const alpha = (tree.position.x - far) / (near - far);
-                const maxSize = new Vector3(1.5, 1.5, 1.75).multiplyScalar(noiseStrength/60);
-                tree.scale.lerpVectors(new Vector3(0, 0, 0), maxSize, alpha)
-               
+                const maxSize = new Vector3(1.5, 1.5, 1.75).multiplyScalar(
+                    noiseStrength / 60
+                );
+                tree.scale.lerpVectors(new Vector3(0, 0, 0), maxSize, alpha);
 
                 i++
             });
