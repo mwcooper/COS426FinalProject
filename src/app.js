@@ -94,16 +94,21 @@ const onAnimationFrameHandler = (timeStamp) => {
     }
     if (yVelocity > 0.6) yVelocity = 0.6; if (yVelocity < -0.6) yVelocity = -0.6;
     
-    if (Math.abs(yAcc) < aRate)
+    if (Math.abs(yAcc) < aRate/1.9) {
+        
         if (Math.abs(yVelocity) >= aRate*2)
             yAcc = -1*Math.sign(yVelocity)*aRate/2
         else {
             yVelocity = 0; 
             yAcc = 0
         }
+    }
 
     camera.position.y += yVelocity
     yVelocity += yAcc
+
+    scene.airship.rotation.x = -Math.PI/2 - yVelocity
+    scene.airship.position.y = camera.position.y
 
 
     renderer.render(scene, camera);
