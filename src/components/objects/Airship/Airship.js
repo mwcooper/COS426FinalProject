@@ -16,6 +16,9 @@ class Airship extends Group {
         // Load object
         const loader = new GLTFLoader();
 
+        // 'Low Poly Airship' mesh from:
+        // https://sketchfab.com/3d-models/low-poly-airship-fa317292c6f142b68d64620251f99b40
+        // from user evherkarakoc
         this.name = 'airship';
         loader.load(MODEL, (gltf) => {
             this.add(gltf.scene);

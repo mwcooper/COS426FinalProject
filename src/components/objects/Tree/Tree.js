@@ -15,6 +15,9 @@ class Tree extends Group {
         // Load object
         const loader = new GLTFLoader();
 
+        // 'Low Poly Tree' mesh from:
+        // https://sketchfab.com/3d-models/low-poly-tree-6d986e0b24b54d85a5354e5cac6207a1
+        // from user Kotzuo
         this.name = 'tree';
         loader.load(MODEL, (gltf) => {
             this.add(gltf.scene);

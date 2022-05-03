@@ -243,9 +243,8 @@ class Chunk extends Group {
         const radius = this.state.ringRadius;
         let chordThetaOff = 0;
         
-        
-            let alpha = (mesh.position.x)/(39*this.state.width)
-            chordThetaOff = 15* alpha * (2 * Math.PI) / 1000;
+        let alpha = (mesh.position.x)/(39*this.state.width)
+        chordThetaOff = 15* alpha * (2 * Math.PI) / 1000;
         
         mesh.position.x = radius * Math.sin(thetaOffset-chordThetaOff);
         mesh.position.z = radius - radius * Math.cos(thetaOffset-chordThetaOff);
