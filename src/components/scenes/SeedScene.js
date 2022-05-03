@@ -3,6 +3,7 @@ import { Scene, Color, AxesHelper, Vector3, PointLight } from 'three';
 import { Flower, Land, Chunk, ChunkManager, TerrainGenerator } from 'objects';
 import { BasicLights } from 'lights';
 import { Tree } from '../objects/Tree';
+import { Airship } from '../objects/Airship';
 
 class SeedScene extends Scene {
     constructor(camera) {
@@ -33,6 +34,11 @@ class SeedScene extends Scene {
         //this.add(axesHelper);
 
         this.state.gui.add(this.state, 'shadows').onChange(()=> this.toggleShadows());
+
+        const airship = new Airship();
+        airship.position.x = 50
+        airship.position.z = 50
+        this.add(airship)
     }
 
     toggleShadows(){
