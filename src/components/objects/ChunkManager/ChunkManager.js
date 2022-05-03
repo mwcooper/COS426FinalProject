@@ -41,7 +41,7 @@ class ChunkManager extends Group {
             10 * this.state.width,
             14 * this.state.width,
             7 * this.state.width,
-            8 * this.state.width,
+            10 * this.state.width,
             4 * this.state.width,
         ];
 
@@ -50,7 +50,7 @@ class ChunkManager extends Group {
             //wireframe:true,
             vertexColors: VertexColors,
             //required for flat shading
-            flatShading: true,
+            //flatShading: true,
         });
 
         const EPS = 2*Math.PI/2000
@@ -66,7 +66,6 @@ class ChunkManager extends Group {
         // TODO make sliders work in realtime. Solution: use chunk update function?
         this.state.gui.add(this.state, 'speed', 0.01, 3.0).step(0.1);
         this.state.gui.add(this.state, 'seed', 0, 10).step(1);
-        //this.state.gui.add(this.state, 'resolution', 1, 4).step(1); // Dont make this too big (crashes due to too much memory overflow)
         this.state.gui.add(this.state, 'noiseScale', 20, 100).step(1);
         this.state.gui.add(this.state, 'noiseStrength', 20, 100).step(1);
 
@@ -84,13 +83,6 @@ class ChunkManager extends Group {
     addToUpdateList(object) {
         this.state.updateList.push(object);
     }
-
-    // moveChunksY(amt) {
-    //     this.state.chunks.forEach(chunk => {
-    //         chunk.terrainMesh.position.y += amt;
-    //         this.state.yPosition += amt;
-    //     });
-    // }
 
     update(timeStamp) {
         this.state.thetaOffset -= 0.001 * this.state.speed*2*Math.PI;

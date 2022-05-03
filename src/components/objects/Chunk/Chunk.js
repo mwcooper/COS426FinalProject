@@ -238,6 +238,9 @@ class Chunk extends Group {
         mesh.position.z = radius - radius * Math.cos(thetaOffset);
         mesh.lookAt(0, 0, this.state.ringRadius);
 
+        mesh.receiveShadow = true;
+        mesh.castShadow = true;
+
         return mesh;
     }
 
@@ -396,7 +399,7 @@ class Chunk extends Group {
     }
 
     update(timeStamp) {
-        const { speed, updateList } = this.state;
+        const { updateList } = this.state;
 
         // Translate the chunk (move it closer and update the curve)
         this.moveOnRing();
@@ -409,7 +412,7 @@ class Chunk extends Group {
         // Add color as a function of this.terrainMesh.x
         this.colorTerrain();
 
-        // Add plants, clouds as a function of this.terrainMesh.x
+        // Add plants, as a function of this.terrainMesh.x
         this.addFlora();
 
         // Add moving life as a function of this.terrainMesh.x
