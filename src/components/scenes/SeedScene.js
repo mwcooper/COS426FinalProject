@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, AxesHelper, Vector3, PointLight } from 'three';
+import { Scene, Color, AxesHelper, Vector3, PointLight, TextureLoader } from 'three';
 import { Flower, Land, Chunk, ChunkManager, TerrainGenerator } from 'objects';
 import { BasicLights } from 'lights';
 import { Tree } from '../objects/Tree';
@@ -22,6 +22,7 @@ class SeedScene extends Scene {
         // Set background to a nice color
         // MWC TODO - Equirectangular background of stars
         this.background = new Color(0x050018);
+        this.background = new TextureLoader().load("src/components/scenes/stars.jpg");
 
         // Add to scene
         this.add(this.state.light)
