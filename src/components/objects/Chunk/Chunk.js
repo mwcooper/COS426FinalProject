@@ -244,9 +244,9 @@ class Chunk extends Group {
         return mesh;
     }
 
-    moveOnRing() {
+    moveOnRing(speed) {
         // Calculate the z position of the mesh based on its theta position in the ring
-        this.state.thetaOffset -= 0.001 * this.state.speed * 2 * Math.PI;
+        this.state.thetaOffset -= 0.001 * speed * 2 * Math.PI;
         const thetaOffset = this.state.thetaOffset;
         const mesh = this.terrainMesh;
         const radius = this.state.ringRadius;
@@ -371,7 +371,7 @@ class Chunk extends Group {
 
                 // LERP to "grow"
                 const alpha = (tree.position.x - far) / (near - far);
-                tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1.5, 1.5, 1.5), alpha)
+                tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1.5, 1.5, 1.75), alpha)
                
 
                 i++
@@ -390,13 +390,11 @@ class Chunk extends Group {
         this.state.updateList.push(object);
     }
 
-    update(timeStamp) {
+    update(timeStamp, speed) {
         const { updateList } = this.state;
 
         // Translate the chunk (move it closer and update the curve)
-        this.moveOnRing();
-
-        // Update terrain based on slider parameters (this seems difficult. Dreamworld used presets. Im guessing it was because it was too hard to livetime update)
+        this.moveOnRing(speed);
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
         this.growTerrain();
@@ -406,8 +404,6 @@ class Chunk extends Group {
 
         // Add plants, as a function of this.terrainMesh.x
         this.addFlora();
-
-        // Add moving life as a function of this.terrainMesh.x
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

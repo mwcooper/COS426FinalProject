@@ -106,10 +106,8 @@ class ChunkManager extends Group {
 
         // Call update for each chunk in the chunks list
         for (const chunk of this.state.chunks) {
-            chunk.update(timeStamp);
+            chunk.update(timeStamp, this.state.speed);
         }
-
-        // this.moveChunksY(this.state.yVelocity)
        
     }
 }
