@@ -60,7 +60,6 @@ class Chunk extends Group {
         // Customizable
         const resolution = this.state.resolution;
         const scale = this.state.noiseScale;
-        const noiseStrength = this.state.noiseStrength;
 
         let simplex = new SimplexNoise(this.state.seed);
 
@@ -110,31 +109,23 @@ class Chunk extends Group {
             const x = (vertex.x + this.state.noiseOffset) / scale;
             const y = vertex.y / scale;
             const noise = fbm(x, y);
-            // vertex.z = noise * noiseStrength;
-            this.heightMap.push(noise * noiseStrength);
+            this.heightMap.push(noise);
 
             // raise sides, lower middle
             let alpha = map(Math.abs(vertex.y), 0, height / 2, 0.8, 1.2);
             this.heightMap[i] *= alpha;
 
             // Modifications
-            if (this.heightMap[i] <= 0.25 * noiseStrength) {
+            if (this.heightMap[i] <= 0.25) {
                 // set water level to same height
-                this.heightMap[i] = 0.25 * noiseStrength;
-            } else if (this.heightMap[i] < 0.5 * noiseStrength) {
-                // let val = map(this.heightMap[i], 0.25*noiseStrength, 0.5*noiseStrength, 1, 2)
-                // // console.log(val)
-                // val = val*val
-                // val = map(val, 1, 4, 0.25*noiseStrength, .5*noiseStrength)
-                // // console.log(val)
-                // this.heightMap[i] = val;
-
+                this.heightMap[i] = 0.25;
+            } else if (this.heightMap[i] < 0.5) {
                 const treeFreq = 0.01
                 if (Math.random() < treeFreq) {
                     this.treeLocations.push(i)
                 }
             }
-            else if (this.heightMap[i] > 0.7 * noiseStrength) {
+            else if (this.heightMap[i] > 0.7) {
                 this.heightMap[i] **= 1.012; //exaggerate the peaks
             }
             
@@ -189,32 +180,31 @@ class Chunk extends Group {
             // assign colors based on the highest point of the face
             let color = 0x000000;
             let max = Math.max(a, b, c);
-            // console.log(max, 0.25 * noiseStrength)
-            if (max <= 0.25 * noiseStrength) {
+            if (max <= 0.25) {
                 // blue (water) 0x44ccff
                 color = 0x44ccff;
-            } else if (max < 0.28 * noiseStrength) {
+            } else if (max < 0.28) {
                 // brown (beach) 0x483C32
                 color = 0x483c32;
-            } else  if (max <= 0.45 * noiseStrength) {
+            } else  if (max <= 0.45) {
                 // green (grass) 0x356520
                 color = 0x356520;
-            } else if (max <= 0.55 * noiseStrength) {
+            } else if (max <= 0.55) {
                 // green --> grey (lerp)
                 const grass = 0x356520;
                 const cliff = 0x335577;
 
-                const alpha = map(max, 0.45*noiseStrength, 0.55*noiseStrength, 0, 1)
+                const alpha = map(max, 0.45, 0.55, 0, 1)
                 color = lerpColors(grass, cliff, alpha)
-            } else if (max <= 0.7 * noiseStrength) {
+            } else if (max <= 0.7) {
                 // grey (cliff) 0x335577
                 color = 0x335577;
-            } else if (max <= 0.9 * noiseStrength) {
+            } else if (max <= 0.9) {
                 // green --> grey (lerp)
                 const cliff = 0x335577;
                 const snow = 0xcccccc;
 
-                const alpha = map(max, 0.7*noiseStrength, 0.9*noiseStrength, 0, 1)
+                const alpha = map(max, 0.7, 0.9, 0, 1)
                 color = lerpColors(cliff, snow, alpha)
             } else {
                 // white (snow) 0xcccccc
@@ -312,7 +302,7 @@ class Chunk extends Group {
     }
 
     // loop thru each vertex and lerp its new .z based on the vertex's .x between gcl[0] and gcl[1]
-    growTerrain() {
+    growTerrain(noiseStrength) {
         if( this.terrainMesh.position.x-this.state.width/2 > this.state.growthBoundaries[0])
             return;
         const geo = this.terrainMesh.geometry;
@@ -325,11 +315,11 @@ class Chunk extends Group {
             // Close full heights, in between interpolate, far flat
             if (xPos < near) {
                 // Full height
-                vertex.z = this.heightMap[i];
+                vertex.z = this.heightMap[i]*noiseStrength;
             } else if (near < xPos && xPos - EPS < far) {
                 // Interpolate
                 const alpha = (xPos - far) / (near - far);
-                vertex.z = this.heightMap[i] * alpha;
+                vertex.z = this.heightMap[i] * alpha * noiseStrength;
             } else {
                 // Flat
                 vertex.z = 0;
@@ -339,7 +329,7 @@ class Chunk extends Group {
         geo.verticesNeedUpdate = true;
     }
 
-    addFlora() {
+    addFlora(noiseStrength) {
         if (this.terrainMesh.position.x-this.state.width/2 > this.state.growthBoundaries[4])
             return;
 
@@ -371,7 +361,8 @@ class Chunk extends Group {
 
                 // LERP to "grow"
                 const alpha = (tree.position.x - far) / (near - far);
-                tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1.5, 1.5, 1.75), alpha)
+                const maxSize = new Vector3(1.5, 1.5, 1.75).multiplyScalar(noiseStrength/60);
+                tree.scale.lerpVectors(new Vector3(0, 0, 0), maxSize, alpha)
                
 
                 i++
@@ -390,20 +381,20 @@ class Chunk extends Group {
         this.state.updateList.push(object);
     }
 
-    update(timeStamp, speed) {
+    update(timeStamp, speed, noiseStrength) {
         const { updateList } = this.state;
 
         // Translate the chunk (move it closer and update the curve)
         this.moveOnRing(speed);
 
         // Increase the height of the terrain as a function of this.terrainMesh.x
-        this.growTerrain();
+        this.growTerrain(noiseStrength);
 
         // Add color as a function of this.terrainMesh.x
         this.colorTerrain();
 
         // Add plants, as a function of this.terrainMesh.x
-        this.addFlora();
+        this.addFlora(noiseStrength);
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

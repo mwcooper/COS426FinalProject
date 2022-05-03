@@ -106,7 +106,7 @@ class ChunkManager extends Group {
 
         // Call update for each chunk in the chunks list
         for (const chunk of this.state.chunks) {
-            chunk.update(timeStamp, this.state.speed);
+            chunk.update(timeStamp, this.state.speed, this.state.noiseStrength);
         }
        
     }
