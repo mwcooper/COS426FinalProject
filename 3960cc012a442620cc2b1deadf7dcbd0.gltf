@@ -1,0 +1,271 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 1434,
+      "max": [
+        1.4923900365829468,
+        2.713900089263916,
+        4.37568998336792
+      ],
+      "min": [
+        -1.497939944267273,
+        -3.9822800159454346,
+        -1.4950799942016602
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 17208,
+      "componentType": 5126,
+      "count": 1434,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -0.9985402226448059
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 1434,
+      "max": [
+        0.9805899858474731,
+        0.9863899946212769
+      ],
+      "min": [
+        0.020500000566244125,
+        0.027729999274015427
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 1950,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "cevherkarakoc (https://sketchfab.com/cevherkarakoc)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/low-poly-airship-fa317292c6f142b68d64620251f99b40",
+      "title": "Low Poly Airship"
+    },
+    "generator": "Sketchfab-12.65.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 7800,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 11472,
+      "byteOffset": 7800,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 34416,
+      "byteOffset": 19272,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 53688,
+      "uri": "./src/components/objects/Airship/scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "./src/components/objects/Airship/Material_baseColor.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Material",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "ship_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2,
+        4,
+        6
+      ],
+      "name": "Root"
+    },
+    {
+      "children": [
+        3
+      ],
+      "matrix": [
+        0.92801,
+        -0.37256000000000006,
+        0.0,
+        0.0,
+        0.37256000000000006,
+        0.92801,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        1.6851500000000001,
+        1.0
+      ],
+      "name": "ship"
+    },
+    {
+      "mesh": 0,
+      "name": "ship_0"
+    },
+    {
+      "children": [
+        5
+      ],
+      "matrix": [
+        0.6147700000000001,
+        -0.78727,
+        0.04760000000000001,
+        0.0,
+        0.7427100000000001,
+        0.55755,
+        -0.37084000000000006,
+        0.0,
+        0.26541000000000003,
+        0.26333,
+        0.92748,
+        0.0,
+        -3.74676,
+        4.616949999999999,
+        6.854729999999999,
+        1.0
+      ],
+      "name": "Sun"
+    },
+    {
+      "name": "Sun"
+    },
+    {
+      "children": [
+        7
+      ],
+      "matrix": [
+        -0.17515,
+        -0.6497500000000002,
+        -0.7397000000000001,
+        0.0,
+        0.8356800000000001,
+        0.29911000000000004,
+        -0.46062000000000003,
+        0.0,
+        0.52054,
+        -0.6988200000000002,
+        0.49059,
+        0.0,
+        3.32876,
+        -5.24941,
+        3.7254,
+        1.0
+      ],
+      "name": "Sun.001"
+    },
+    {
+      "name": "Sun.001"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9728,
+      "minFilter": 9728,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    }
+  ]
+}
