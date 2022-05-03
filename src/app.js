@@ -104,8 +104,6 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     camera.position.y += yVelocity
     yVelocity += yAcc
-    console.log("interpreted", yAcc, yVelocity)
-
 
 
     renderer.render(scene, camera);

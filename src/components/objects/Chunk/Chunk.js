@@ -349,38 +349,30 @@ class Chunk extends Group {
         if (this.trees.length <= 0)
             this.treeLocations.forEach((t) => {
                 const vertex = geo.vertices[t];
-                // this.add(tree.mesh)
-
-                // console.log("added");
-
                 const tree = new Tree(this);
                 tree.rotateOnAxis(new Vector3(1, 0, 0), Math.PI/2)
                 tree.rotateOnAxis(new Vector3(0, 1, 0), Math.random()*2*Math.PI)
                 tree.position.x = vertex.x + this.terrainMesh.position.x
                 tree.position.y = vertex.y + this.terrainMesh.position.y
                 tree.position.z = vertex.z + this.terrainMesh.position.z
-
                 this.parent.add(tree)
                 this.trees.push(tree)
-                // console.log(tree.position.z)
             });
         else {
             let i = 0;
             this.treeLocations.forEach((t) => {
                 const vertex = geo.vertices[t];
                 const tree = this.trees[i];
-                // console.log(this.trees.length)
-                // console.log(tree)
-                // console.log(vertex.x + this.terrainMesh.position.x)
+                
                 tree.position.x = vertex.x + this.terrainMesh.position.x
                 tree.position.y = vertex.y + this.terrainMesh.position.y
                 tree.position.z = vertex.z + this.terrainMesh.position.z - 2.5
-                // console.log(tree.position.z)
+                
 
                 // LERP to "grow"
                 const alpha = (tree.position.x - far) / (near - far);
                 tree.scale.lerpVectors(new Vector3(0, 0, 0), new Vector3(1.5, 1.5, 1.5), alpha)
-                // console.log(tree.scale, alpha)
+               
 
                 i++
             });
