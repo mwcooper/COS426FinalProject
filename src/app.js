@@ -43,6 +43,7 @@ document.body.appendChild(canvas);
 // controls.maxDistance = 16;
 // controls.update();
 
+const chunkManager = scene.state.updateList[0]
 
 let yAcc = 0;
 let aRate = 0.06;
@@ -57,6 +58,14 @@ document.onkeydown = function (e) {
             if (yVelocity < 0.6)    
                 yAcc = aRate;
             break;
+        // case 'ArrowUp':
+        //     if (chunkManager.state.speed < 3)
+        //         chunkManager.state.speed += 0.05
+        //     break;
+        // case 'ArrowDown':
+        //     if (chunkManager.state.speed > 0)
+        //         chunkManager.state.speed -= 0.05
+        //     break;
     }
 };
 
@@ -109,6 +118,8 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     scene.airship.rotation.x = -Math.PI/2 - yVelocity
     scene.airship.position.y = camera.position.y
+
+    camera.position.x = -chunkManager.state.speed*5
 
 
     renderer.render(scene, camera);
