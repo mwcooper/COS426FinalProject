@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, AxesHelper, Vector3, PointLight, TextureLoader } from 'three';
+import { Scene, Color, AxesHelper, Vector3, PointLight, TextureLoader, AudioListener, AudioLoader, Audio } from 'three';
 import { Flower, Land, Chunk, ChunkManager, TerrainGenerator } from 'objects';
 import { BasicLights } from 'lights';
 import { Tree } from '../objects/Tree';
@@ -16,6 +16,7 @@ class SeedScene extends Scene {
             updateList: [],
             camera: camera,
             shadows: false,
+            music: false,
             light: new BasicLights(),
         };
 
@@ -35,11 +36,30 @@ class SeedScene extends Scene {
         //this.add(axesHelper);
 
         this.state.gui.add(this.state, 'shadows').onChange(()=> this.toggleShadows());
+        this.state.gui.add(this.state, 'music').onChange(()=> this.toggleMusic());
 
         this.airship = new Airship();
         this.airship.position.x = 50
         this.airship.position.z = 50
         this.add(this.airship)
+
+        // Set up audio loader from THREEjs Docs
+        // create an AudioListener and add it to the camera
+        const listener = new AudioListener();
+        this.state.camera.add( listener );
+
+        // create a global audio source
+        const sound = new Audio( listener );
+
+        // load a sound and set it as the Audio object's buffer
+        const audioLoader = new AudioLoader();
+        audioLoader.load( './src/components/sounds/lofi1.mp3', function( buffer ) {
+            sound.setBuffer( buffer );
+            sound.setLoop( true );
+            sound.setVolume( 0.5 );
+        });
+
+        this.sound = sound
     }
 
     toggleShadows(){
@@ -57,6 +77,22 @@ class SeedScene extends Scene {
             const light = new BasicLights();
             this.add(light);
             this.state.light = light;
+        }
+    }
+
+    toggleMusic() {
+        if (this.state.music) {
+            this.sound.play();
+            // SONG CREDIT:
+
+            /*  Sun shines through the leaves by Babasmas | https://soundcloud.com/babasmasmoosic
+            Music promoted by https://www.chosic.com/free-music/all/
+            Creative Commons CC BY-SA 3.0
+            https://creativecommons.org/licenses/by-sa/3.0/
+            */
+        }
+        else {
+            this.sound.pause();
         }
     }
 
