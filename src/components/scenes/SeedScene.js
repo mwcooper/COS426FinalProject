@@ -23,7 +23,7 @@ class SeedScene extends Scene {
         // Set background to a nice color
         // MWC TODO - Equirectangular background of stars
         this.background = new Color(0x050018);
-        this.background = new TextureLoader().load("src/components/scenes/stars.jpg");
+        this.background = new TextureLoader().load("https://raw.githubusercontent.com/mwcooper/COS426FinalProject/master/src/components/scenes/stars.jpg");
 
         // Add to scene
         this.add(this.state.light)
