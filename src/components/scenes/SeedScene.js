@@ -53,7 +53,7 @@ class SeedScene extends Scene {
 
         // load a sound and set it as the Audio object's buffer
         const audioLoader = new AudioLoader();
-        audioLoader.load( './src/components/sounds/lofi1.mp3', function( buffer ) {
+        audioLoader.load( 'https://raw.githubusercontent.com/mwcooper/COS426FinalProject/master/src/components/sounds/lofi1.mp3', function( buffer ) {
             sound.setBuffer( buffer );
             sound.setLoop( true );
             sound.setVolume( 0.5 );
