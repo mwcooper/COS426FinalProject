@@ -110,7 +110,7 @@
   "buffers": [
     {
       "byteLength": 7032,
-      "uri": "/cos426finalproject/src/components/objects/Tree/scene.bin"
+      "uri": "./src/components/objects/Tree/scene.bin"
     }
   ],
   "materials": [
