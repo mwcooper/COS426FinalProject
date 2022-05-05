@@ -91,12 +91,12 @@
   "buffers": [
     {
       "byteLength": 53688,
-      "uri": "./src/components/objects/Airship/scene.bin"
+      "uri": "https://raw.githubusercontent.com/mwcooper/COS426FinalProject/master/src/components/objects/Airship/scene.bin"
     }
   ],
   "images": [
     {
-      "uri": "./src/components/objects/Airship/Material_baseColor.png"
+      "uri": "https://raw.githubusercontent.com/mwcooper/COS426FinalProject/master/src/components/objects/Airship/Material_baseColor.png"
     }
   ],
   "materials": [
